@@ -1,0 +1,174 @@
+/* Add a base style for the body or a wrapper if you want the background on the whole page */
+.body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #0b0e11; /* Very dark, almost black */
+    color: #e0e0e0; /* Light grey for text */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden; /* Hide scrollbars if any from animations */
+}
+
+.container {
+    background-color: #12171c; /* Slightly lighter dark shade for the form container */
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 25px rgba(0, 191, 255, 0.2); /* Deep sky blue glow, subtle */
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+    overflow: hidden; /* For pseudo-elements if needed */
+}
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        transparent,
+        rgba(0, 191, 255, 0.1),
+        transparent 30%
+    );
+    animation: rotate 10s linear infinite;
+    z-index: 1;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.formContainer {
+    position: relative;
+    z-index: 2; /* Ensure form elements are above the animation */
+}
+
+.formContainer h2 {
+    font-family: 'Orbitron', sans-serif;
+    color: #00bfff; /* Deep sky blue */
+    margin-bottom: 30px;
+    font-size: 2em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.inputGroup {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.inputGroup input {
+    width: calc(100% - 20px); /* Adjust width to account for padding */
+    padding: 15px 10px;
+    background-color: #1c232b; /* Darker input background */
+    border: 1px solid #007bff; /* Brighter blue border */
+    border-radius: 5px;
+    color: #e0e0e0;
+    font-size: 1em;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.inputGroup input::placeholder {
+    color: #888;
+}
+
+.inputGroup input:focus {
+    outline: none;
+    border-color: #00bfff; /* Deep sky blue on focus */
+    box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+}
+
+.btn {
+    background-color: #007bff; /* Primary blue */
+    color: #ffffff;
+    padding: 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-family: 'Orbitron', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: 100%;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.toggleText {
+    margin-top: 25px;
+    font-size: 0.9em;
+    color: #aaa;
+}
+
+.toggleLink {
+    color: #00bfff; /* Deep sky blue */
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.toggleLink:hover {
+    text-decoration: underline;
+}
+
+/* Form switching styles - handled by React state, but keep animation */
+.form {
+    /* display: none; /* No longer needed, React handles visibility */
+}
+
+.activeForm {
+    /* display: block; /* No longer needed, React handles visibility */
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .container {
+        padding: 20px;
+        margin: 20px; /* Add some margin on small screens */
+    }
+
+    .formContainer h2 {
+        font-size: 1.8em;
+    }
+
+    .btn {
+        padding: 12px;
+        font-size: 1em;
+    }
+
+    .inputGroup input {
+        padding: 12px 10px;
+        font-size: 0.9em;
+    }
+}
