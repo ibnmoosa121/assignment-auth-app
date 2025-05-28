@@ -1,10 +1,13 @@
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import styles from '../styles/Auth.module.css';
+import { supabase } from './supabaseClient';
 
 export default function AuthPage() {
     const [isSignUp, setIsSignUp] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -24,10 +27,40 @@ export default function AuthPage() {
         alert('Sign In functionality not implemented yet.');
     };
 
-    const handleSignUpSubmit = (e) => {
+    const handleSignUpSubmit = async (e) => {
         e.preventDefault();
-        console.log('Sign Up submitted');
-        alert('Sign Up functionality not implemented yet.');
+        setMessage('');
+        setError('');
+
+        const email = e.target.signUpEmail.value;
+        const password = e.target.signUpPassword.value;
+        const confirmPassword = e.target.confirmPassword.value;
+        // const username = e.target.signUpUsername.value; // Optional: for later use
+
+        if (password !== confirmPassword) {
+            setError('Passwords do not match.');
+            return;
+        }
+
+        const { data, error: signUpError } = await supabase.auth.signUp({
+            email: email,
+            password: password,
+            // options: { // Optional: include additional data like username
+            //   data: {
+            //     username: username,
+            //   }
+            // }
+        });
+
+        if (signUpError) {
+            console.error('Sign up error:', signUpError);
+            setError(`Sign up failed: ${signUpError.message}`);
+        } else {
+            console.log('Sign up successful:', data);
+            setMessage('Sign up successful! Please check your email to confirm.');
+            // Optionally, you can reset the form or redirect the user
+            e.target.reset(); // Reset form fields
+        }
     };
 
     return (
@@ -64,6 +97,8 @@ export default function AuthPage() {
                             ) : (
                                 <form id="signUpForm" className={`${styles.form} ${styles.activeForm}`} onSubmit={handleSignUpSubmit}>
                                     <h2>Sign Up</h2>
+                                    {message && <p className={styles.successMessage}>{message}</p>}
+                                    {error && <p className={styles.errorMessage}>{error}</p>}
                                     <div className={styles.inputGroup}>
                                         <input type="text" id="signUpUsername" placeholder="Username" required />
                                     </div>
