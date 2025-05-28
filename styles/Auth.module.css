@@ -1,9 +1,9 @@
 /* Add a base style for the body or a wrapper if you want the background on the whole page */
 .body {
     margin: 0;
-    font-family: 'Roboto', sans-serif;
-    background-color: #0b0e11; /* Very dark, almost black */
-    color: #e0e0e0; /* Light grey for text */
+    font-family: 'Exo 2', sans-serif;
+    background-color: #1E2026; /* Very dark, almost black - Binance uses #1E2026 or similar */
+    color: #EAECEF; /* Lighter grey for text - Binance uses #EAECEF */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -12,10 +12,10 @@
 }
 
 .container {
-    background-color: #12171c; /* Slightly lighter dark shade for the form container */
+    background-color: #14151A; /* Slightly lighter dark shade for the form container - Binance uses #14151A */
     padding: 40px;
     border-radius: 10px;
-    box-shadow: 0 0 25px rgba(0, 191, 255, 0.2); /* Deep sky blue glow, subtle */
+    box-shadow: 0 0 30px rgba(240, 185, 11, 0.25); /* Binance yellow glow, more pronounced */
     width: 100%;
     max-width: 400px;
     text-align: center;
@@ -32,7 +32,7 @@
     height: 200%;
     background: conic-gradient(
         transparent,
-        rgba(0, 191, 255, 0.1),
+        rgba(240, 185, 11, 0.1),
         transparent 30%
     );
     animation: rotate 10s linear infinite;
@@ -55,7 +55,7 @@
 
 .formContainer h2 {
     font-family: 'Orbitron', sans-serif;
-    color: #00bfff; /* Deep sky blue */
+    color: #F0B90B; /* Binance Yellow */
     margin-bottom: 30px;
     font-size: 2em;
     text-transform: uppercase;
@@ -70,11 +70,12 @@
 .inputGroup input {
     width: calc(100% - 20px); /* Adjust width to account for padding */
     padding: 15px 10px;
-    background-color: #1c232b; /* Darker input background */
-    border: 1px solid #007bff; /* Brighter blue border */
+    background-color: #2B3139; /* Darker input background - Binance like #2B3139 */
+    border: 1px solid #474d57; /* Neutral dark border */
     border-radius: 5px;
-    color: #e0e0e0;
+    color: #EAECEF;
     font-size: 1em;
+    font-family: 'Exo 2', sans-serif;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -84,13 +85,13 @@
 
 .inputGroup input:focus {
     outline: none;
-    border-color: #00bfff; /* Deep sky blue on focus */
-    box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+    border-color: #F0B90B; /* Binance Yellow on focus */
+    box-shadow: 0 0 10px rgba(240, 185, 11, 0.6);
 }
 
 .btn {
-    background-color: #007bff; /* Primary blue */
-    color: #ffffff;
+    background-color: #F0B90B; /* Binance Yellow */
+    color: #14151A; /* Dark text for contrast on yellow button */
     padding: 15px;
     border: none;
     border-radius: 5px;
@@ -105,8 +106,9 @@
 }
 
 .btn:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+    background-color: #f3c847; /* Lighter yellow on hover */
     transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(240, 185, 11, 0.4);
 }
 
 .btn:active {
@@ -116,11 +118,11 @@
 .toggleText {
     margin-top: 25px;
     font-size: 0.9em;
-    color: #aaa;
+    color: #848e9c; /* Binance secondary text color */
 }
 
 .toggleLink {
-    color: #00bfff; /* Deep sky blue */
+    color: #F0B90B; /* Binance Yellow */
     cursor: pointer;
     font-weight: bold;
     text-decoration: none;
@@ -131,9 +133,6 @@
 }
 
 /* Form switching styles - handled by React state, but keep animation */
-.form {
-    /* display: none; /* No longer needed, React handles visibility */
-}
 
 .activeForm {
     /* display: block; /* No longer needed, React handles visibility */
@@ -148,6 +147,63 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* Branding Logo Styles */
+.brandingLogo {
+    position: absolute; /* Positioned relative to the .body or a suitable parent */
+    top: 20px;
+    left: 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5em; /* Adjust size as needed */
+    font-weight: 700;
+    color: #F0B90B; /* Binance Yellow */
+    text-shadow: 0 0 5px rgba(240, 185, 11, 0.5); /* Subtle glow */
+    z-index: 10; /* Ensure it's above other elements if needed, but below splash */
+    padding: 10px;
+}
+
+/* Splash Screen Styles */
+.splashScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #14151A; /* Same as container or slightly darker */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+}
+
+.splashScreenHidden {
+    opacity: 0;
+    pointer-events: none; /* Prevent interaction when hidden */
+}
+
+/* CSS Custom Property for conic gradient animation */
+@property --progress-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.splashLoader {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: conic-gradient(#F0B90B var(--progress-angle), #2B3139 var(--progress-angle)); /* #2B3139 is the track color */
+    animation: fill-progress 3s linear forwards;
+}
+
+/* New keyframes for fill animation */
+@keyframes fill-progress {
+    to {
+        --progress-angle: 360deg;
     }
 }
 
