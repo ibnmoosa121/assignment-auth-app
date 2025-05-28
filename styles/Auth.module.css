@@ -2,25 +2,26 @@
 .body {
     margin: 0;
     font-family: 'Exo 2', sans-serif;
-    background-color: #1E2026; /* Very dark, almost black - Binance uses #1E2026 or similar */
-    color: #EAECEF; /* Lighter grey for text - Binance uses #EAECEF */
+    background-color: #14151A; /* Matching the landing page dark background */
+    color: #EAECEF; /* Lighter grey for text */
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    overflow: hidden; /* Hide scrollbars if any from animations */
+    padding: 20px;
+    position: relative;
+    background-image: radial-gradient(circle at 30% 50%, rgba(240, 185, 11, 0.05) 0%, transparent 70%);
 }
 
 .container {
-    background-color: #14151A; /* Slightly lighter dark shade for the form container - Binance uses #14151A */
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 0 30px rgba(240, 185, 11, 0.25); /* Binance yellow glow, more pronounced */
+    background-color: #2B3139; /* Darker container background */
+    border-radius: 12px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.7), 0 0 15px rgba(240, 185, 11, 0.2);
+    overflow: hidden;
     width: 100%;
-    max-width: 400px;
-    text-align: center;
-    position: relative;
-    overflow: hidden; /* For pseudo-elements if needed */
+    max-width: 420px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(240, 185, 11, 0.1);
 }
 
 .container::before {
@@ -63,20 +64,22 @@
 }
 
 .inputGroup {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     position: relative;
 }
 
 .inputGroup input {
-    width: calc(100% - 20px); /* Adjust width to account for padding */
-    padding: 15px 10px;
-    background-color: #2B3139; /* Darker input background - Binance like #2B3139 */
+    width: 100%;
+    padding: 15px 15px;
+    background-color: rgba(20, 21, 26, 0.5); /* Slightly transparent dark background */
     border: 1px solid #474d57; /* Neutral dark border */
-    border-radius: 5px;
+    border-radius: 8px;
     color: #EAECEF;
     font-size: 1em;
     font-family: 'Exo 2', sans-serif;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .inputGroup input::placeholder {
@@ -84,9 +87,36 @@
 }
 
 .inputGroup input:focus {
+    border-color: #F0B90B; /* Binance Yellow when focused */
     outline: none;
-    border-color: #F0B90B; /* Binance Yellow on focus */
-    box-shadow: 0 0 10px rgba(240, 185, 11, 0.6);
+    box-shadow: 0 0 8px rgba(240, 185, 11, 0.5), inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Enhanced glow when focused */
+    background-color: rgba(20, 21, 26, 0.7); /* Slightly darker when focused */
+    transform: translateY(-1px);
+}
+
+.form h2 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: #F0B90B; /* Binance Yellow */
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.form h2::after {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 3px;
+    background-color: #F0B90B;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 2px;
 }
 
 .btn {
@@ -106,9 +136,13 @@
 }
 
 .btn:hover {
-    background-color: #f3c847; /* Lighter yellow on hover */
+    background-color: #F8D12F; /* Lighter yellow on hover */
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(240, 185, 11, 0.4);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 0 15px rgba(240, 185, 11, 0.4);
+}
+
+.btn:hover::before {
+    left: 100%;
 }
 
 .btn:active {
@@ -116,41 +150,36 @@
 }
 
 .toggleText {
+    text-align: center;
     margin-top: 25px;
-    font-size: 0.9em;
-    color: #848e9c; /* Binance secondary text color */
+    font-size: 0.95em;
+    color: #EAECEF;
 }
 
 .toggleLink {
     color: #F0B90B; /* Binance Yellow */
     cursor: pointer;
     font-weight: bold;
-    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    padding: 0 2px;
+}
+
+.toggleLink::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    background-color: #F0B90B;
+    transition: width 0.3s ease;
 }
 
 .toggleLink:hover {
     text-decoration: underline;
 }
 
-/* Form switching styles - handled by React state, but keep animation */
-
-.activeForm {
-    /* display: block; /* No longer needed, React handles visibility */
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Branding Logo Styles */
 .brandingLogo {
     position: absolute; /* Positioned relative to the .body or a suitable parent */
     top: 20px;
@@ -164,7 +193,6 @@
     padding: 10px;
 }
 
-/* Success and Error Message Styles */
 .successMessage {
     color: #28a745; /* Green for success */
     background-color: rgba(40, 167, 69, 0.1);

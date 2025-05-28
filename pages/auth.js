@@ -19,12 +19,39 @@ export default function AuthPage() {
 
     const toggleForm = () => {
         setIsSignUp(!isSignUp);
+        setMessage(''); // Clear messages when toggling forms
+        setError('');
     };
 
-    const handleSignInSubmit = (e) => {
+    const handleSignInSubmit = async (e) => {
         e.preventDefault();
-        console.log('Sign In submitted');
-        alert('Sign In functionality not implemented yet.');
+        setMessage('');
+        setError('');
+
+        const email = e.target.signInEmail.value;
+        const password = e.target.signInPassword.value;
+
+        try {
+            const { data, error: signInError } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (signInError) {
+                console.error('Sign in error:', signInError);
+                setError(`Sign in failed: ${signInError.message}`);
+            } else {
+                console.log('Sign in successful:', data);
+                setMessage('Sign in successful! Redirecting to home page...');
+                // Redirect to landing page after a brief delay to show the success message
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1500);
+            }
+        } catch (error) {
+            console.error('Unexpected error during sign in:', error);
+            setError('An unexpected error occurred. Please try again.');
+        }
     };
 
     const handleSignUpSubmit = async (e) => {
@@ -83,6 +110,8 @@ export default function AuthPage() {
                             {!isSignUp ? (
                                 <form id="signInForm" className={`${styles.form} ${styles.activeForm}`} onSubmit={handleSignInSubmit}>
                                     <h2>Sign In</h2>
+                                    {message && <p className={styles.successMessage}>{message}</p>}
+                                    {error && <p className={styles.errorMessage}>{error}</p>}
                                     <div className={styles.inputGroup}>
                                         <input type="email" id="signInEmail" placeholder="Email or Username" required />
                                     </div>
