@@ -6,21 +6,12 @@ import { supabase } from './supabaseClient';
 
 export default function Home() {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [trendingCoins, setTrendingCoins] = useState([
-    { id: 1, name: 'Bitcoin', symbol: 'BTC', price: 52345.67, change: 2.34 },
-    { id: 2, name: 'Ethereum', symbol: 'ETH', price: 2876.54, change: -1.23 },
-    { id: 3, name: 'Binance Coin', symbol: 'BNB', price: 432.12, change: 5.67 },
-    { id: 4, name: 'Solana', symbol: 'SOL', price: 123.45, change: 7.89 },
-    { id: 5, name: 'Cardano', symbol: 'ADA', price: 1.23, change: -0.45 },
-  ]);
 
   useEffect(() => {
     // Check if user is already signed in
     const checkUser = async () => {
       const { data } = await supabase.auth.getSession();
       setUser(data.session?.user || null);
-      setLoading(false);
     };
     
     checkUser();
@@ -47,7 +38,6 @@ export default function Home() {
         <title>NovaP2P - Crypto P2P Marketplace</title>
         <meta name="description" content="A futuristic crypto P2P marketplace" />
         <link rel="icon" href="/favicon.ico" />
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
       </Head>
 
       <header className={styles.header}>
@@ -90,35 +80,6 @@ export default function Home() {
           <div className={styles.heroImage}>
             {/* This would be a crypto-related image or animation */}
             <div className={styles.cryptoOrb}></div>
-          </div>
-        </section>
-
-        <section id="markets" className={styles.markets}>
-          <h2 className={styles.sectionTitle}>Trending Markets</h2>
-          <div className={styles.marketTable}>
-            <div className={styles.tableHeader}>
-              <div className={styles.tableCell}>Coin</div>
-              <div className={styles.tableCell}>Price (USD)</div>
-              <div className={styles.tableCell}>24h Change</div>
-              <div className={styles.tableCell}>Action</div>
-            </div>
-            {trendingCoins.map((coin) => (
-              <div key={coin.id} className={styles.tableRow}>
-                <div className={styles.tableCell}>
-                  <div className={styles.coinInfo}>
-                    <span className={styles.coinName}>{coin.name}</span>
-                    <span className={styles.coinSymbol}>{coin.symbol}</span>
-                  </div>
-                </div>
-                <div className={styles.tableCell}>${coin.price.toLocaleString()}</div>
-                <div className={`${styles.tableCell} ${coin.change >= 0 ? styles.positive : styles.negative}`}>
-                  {coin.change > 0 ? '+' : ''}{coin.change}%
-                </div>
-                <div className={styles.tableCell}>
-                  <button className={styles.tradeButton}>Trade</button>
-                </div>
-              </div>
-            ))}
           </div>
         </section>
 
@@ -180,7 +141,7 @@ export default function Home() {
           </div>
         </div>
         <div className={styles.copyright}>
-          © {new Date().getFullYear()} NovaP2P. All rights reserved.
+          &copy; {new Date().getFullYear()} NovaP2P. All rights reserved.
         </div>
       </footer>
     </div>
