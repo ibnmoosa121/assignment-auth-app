@@ -100,23 +100,8 @@ export default function AuthPage() {
                     <div className={styles.brandingLogo}>NovaP2P</div>
 
                     <div className={styles.container}>
-                        <div className={styles.toggleContainer}>
-                            <div className={styles.toggleButton}>
-                                <div 
-                                    className={styles.toggleOption}
-                                >
-                                    Sign In
-                                </div>
-                                <div 
-                                    className={styles.toggleOption}
-                                >
-                                    Sign Up
-                                </div>
-                                <div className={styles.slider}></div>
-                            </div>
-                        </div>
                         <div className={styles.formContainer}>
-                            <form id="signInForm" className={`${styles.form} ${styles.activeForm}`} onSubmit={handleSignInSubmit}>
+                            <form id="signInForm" className={styles.form} onSubmit={handleSignInSubmit}>
                                 <h2>Sign In</h2>
                                 {message && <p className={styles.successMessage}>{message}</p>}
                                 {error && <p className={styles.errorMessage}>{error}</p>}
