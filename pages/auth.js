@@ -4,7 +4,6 @@ import styles from '../styles/Auth.module.css';
 import { supabase } from './supabaseClient';
 
 export default function AuthPage() {
-    const [isSignUp, setIsSignUp] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
@@ -17,13 +16,6 @@ export default function AuthPage() {
 
         return () => clearTimeout(timer);
     }, []);
-
-    const toggleForm = () => {
-        setIsSignUp(!isSignUp);
-        setMessage(''); // Clear messages when toggling forms
-        setError('');
-        setInvalidCredentials(false); // Reset invalid credentials state
-    };
 
     const handleSignInSubmit = async (e) => {
         e.preventDefault();
@@ -97,7 +89,6 @@ export default function AuthPage() {
         <>
             <Head>
                 <title>Authentication - NovaP2P</title>
-                <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
             </Head>
             {isLoading ? (
                 <div className={`${styles.splashScreen} ${isLoading ? '' : styles.splashScreenHidden}`}>
@@ -110,16 +101,14 @@ export default function AuthPage() {
 
                     <div className={styles.container}>
                         <div className={styles.toggleContainer}>
-                            <div className={`${styles.toggleButton} ${isSignUp ? styles.toggleRight : styles.toggleLeft}`}>
+                            <div className={styles.toggleButton}>
                                 <div 
-                                    className={`${styles.toggleOption} ${!isSignUp ? styles.activeOption : ''}`}
-                                    onClick={() => setIsSignUp(false)}
+                                    className={styles.toggleOption}
                                 >
                                     Sign In
                                 </div>
                                 <div 
-                                    className={`${styles.toggleOption} ${isSignUp ? styles.activeOption : ''}`}
-                                    onClick={() => setIsSignUp(true)}
+                                    className={styles.toggleOption}
                                 >
                                     Sign Up
                                 </div>
@@ -127,39 +116,36 @@ export default function AuthPage() {
                             </div>
                         </div>
                         <div className={styles.formContainer}>
-                            {!isSignUp ? (
-                                <form id="signInForm" className={`${styles.form} ${styles.activeForm}`} onSubmit={handleSignInSubmit}>
-                                    <h2>Sign In</h2>
-                                    {message && <p className={styles.successMessage}>{message}</p>}
-                                    {error && <p className={styles.errorMessage}>{error}</p>}
-                                    <div className={styles.inputGroup}>
-                                        <input type="email" id="signInEmail" placeholder="Email or Username" required />
-                                    </div>
-                                    <div className={styles.inputGroup}>
-                                        <input type="password" id="signInPassword" placeholder="Password" required />
-                                    </div>
-                                    <button type="submit" className={`${styles.btn} ${invalidCredentials ? styles.invalidBtn : ''}`}>Sign In</button>
-                                </form>
-                            ) : (
-                                <form id="signUpForm" className={`${styles.form} ${styles.activeForm}`} onSubmit={handleSignUpSubmit}>
-                                    <h2>Sign Up</h2>
-                                    {message && <p className={styles.successMessage}>{message}</p>}
-                                    {error && <p className={styles.errorMessage}>{error}</p>}
-                                    <div className={styles.inputGroup}>
-                                        <input type="text" id="signUpUsername" placeholder="Username" required />
-                                    </div>
-                                    <div className={styles.inputGroup}>
-                                        <input type="email" id="signUpEmail" placeholder="Email" required />
-                                    </div>
-                                    <div className={styles.inputGroup}>
-                                        <input type="password" id="signUpPassword" placeholder="Password" required />
-                                    </div>
-                                    <div className={styles.inputGroup}>
-                                        <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
-                                    </div>
-                                    <button type="submit" className={styles.btn}>Sign Up</button>
-                                </form>
-                            )}
+                            <form id="signInForm" className={`${styles.form} ${styles.activeForm}`} onSubmit={handleSignInSubmit}>
+                                <h2>Sign In</h2>
+                                {message && <p className={styles.successMessage}>{message}</p>}
+                                {error && <p className={styles.errorMessage}>{error}</p>}
+                                <div className={styles.inputGroup}>
+                                    <input type="email" id="signInEmail" placeholder="Email or Username" required />
+                                </div>
+                                <div className={styles.inputGroup}>
+                                    <input type="password" id="signInPassword" placeholder="Password" required />
+                                </div>
+                                <button type="submit" className={`${styles.btn} ${invalidCredentials ? styles.invalidBtn : ''}`}>Sign In</button>
+                            </form>
+                            <form id="signUpForm" className={styles.form} onSubmit={handleSignUpSubmit}>
+                                <h2>Sign Up</h2>
+                                {message && <p className={styles.successMessage}>{message}</p>}
+                                {error && <p className={styles.errorMessage}>{error}</p>}
+                                <div className={styles.inputGroup}>
+                                    <input type="text" id="signUpUsername" placeholder="Username" required />
+                                </div>
+                                <div className={styles.inputGroup}>
+                                    <input type="email" id="signUpEmail" placeholder="Email" required />
+                                </div>
+                                <div className={styles.inputGroup}>
+                                    <input type="password" id="signUpPassword" placeholder="Password" required />
+                                </div>
+                                <div className={styles.inputGroup}>
+                                    <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
+                                </div>
+                                <button type="submit" className={styles.btn}>Sign Up</button>
+                            </form>
                         </div>
                     </div>
                 </div>
