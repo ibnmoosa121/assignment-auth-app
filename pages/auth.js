@@ -4,6 +4,7 @@ import styles from '../styles/Auth.module.css';
 import { supabase } from './supabaseClient';
 
 export default function AuthPage() {
+    console.log("<<<<<< BUILDING LATEST AUTH PAGE - VERCEL TEST >>>>>>");
     const [isLoading, setIsLoading] = useState(true);
     const [message, setMessage] = useState('');
 
