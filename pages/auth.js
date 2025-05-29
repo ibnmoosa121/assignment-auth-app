@@ -8,6 +8,7 @@ export default function AuthPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [invalidCredentials, setInvalidCredentials] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -21,6 +22,7 @@ export default function AuthPage() {
         setIsSignUp(!isSignUp);
         setMessage(''); // Clear messages when toggling forms
         setError('');
+        setInvalidCredentials(false); // Reset invalid credentials state
     };
 
     const handleSignInSubmit = async (e) => {
@@ -40,6 +42,7 @@ export default function AuthPage() {
             if (signInError) {
                 console.error('Sign in error:', signInError);
                 setError(`Sign in failed: ${signInError.message}`);
+                setInvalidCredentials(true); // Set invalid credentials to trigger button animation
             } else {
                 console.log('Sign in successful:', data);
                 setMessage('Sign in successful! Redirecting to home page...');
@@ -93,8 +96,8 @@ export default function AuthPage() {
     return (
         <>
             <Head>
-                <title>Authentication - NextJS</title>
-                <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;700&family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet" />
+                <title>Authentication - NovaP2P</title>
+                <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
             </Head>
             {isLoading ? (
                 <div className={`${styles.splashScreen} ${isLoading ? '' : styles.splashScreenHidden}`}>
@@ -106,6 +109,23 @@ export default function AuthPage() {
                     <div className={styles.brandingLogo}>NovaP2P</div>
 
                     <div className={styles.container}>
+                        <div className={styles.toggleContainer}>
+                            <div className={`${styles.toggleButton} ${isSignUp ? styles.toggleRight : styles.toggleLeft}`}>
+                                <div 
+                                    className={`${styles.toggleOption} ${!isSignUp ? styles.activeOption : ''}`}
+                                    onClick={() => setIsSignUp(false)}
+                                >
+                                    Sign In
+                                </div>
+                                <div 
+                                    className={`${styles.toggleOption} ${isSignUp ? styles.activeOption : ''}`}
+                                    onClick={() => setIsSignUp(true)}
+                                >
+                                    Sign Up
+                                </div>
+                                <div className={styles.slider}></div>
+                            </div>
+                        </div>
                         <div className={styles.formContainer}>
                             {!isSignUp ? (
                                 <form id="signInForm" className={`${styles.form} ${styles.activeForm}`} onSubmit={handleSignInSubmit}>
@@ -118,10 +138,7 @@ export default function AuthPage() {
                                     <div className={styles.inputGroup}>
                                         <input type="password" id="signInPassword" placeholder="Password" required />
                                     </div>
-                                    <button type="submit" className={styles.btn}>Sign In</button>
-                                    <p className={styles.toggleText}>
-                                        Don&apos;t have an account? <span className={styles.toggleLink} onClick={toggleForm}>Sign Up</span>
-                                    </p>
+                                    <button type="submit" className={`${styles.btn} ${invalidCredentials ? styles.invalidBtn : ''}`}>Sign In</button>
                                 </form>
                             ) : (
                                 <form id="signUpForm" className={`${styles.form} ${styles.activeForm}`} onSubmit={handleSignUpSubmit}>
@@ -141,9 +158,6 @@ export default function AuthPage() {
                                         <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
                                     </div>
                                     <button type="submit" className={styles.btn}>Sign Up</button>
-                                    <p className={styles.toggleText}>
-                                        Already have an account? <span className={styles.toggleLink} onClick={toggleForm}>Sign In</span>
-                                    </p>
                                 </form>
                             )}
                         </div>

@@ -47,7 +47,7 @@ export default function Home() {
         <title>NovaP2P - Crypto P2P Marketplace</title>
         <meta name="description" content="A futuristic crypto P2P marketplace" />
         <link rel="icon" href="/favicon.ico" />
-        <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;700&family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
       </Head>
 
       <header className={styles.header}>

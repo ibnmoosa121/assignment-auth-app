@@ -1,16 +1,17 @@
 /* Add a base style for the body or a wrapper if you want the background on the whole page */
 .body {
     margin: 0;
-    font-family: 'Exo 2', sans-serif;
+    font-family: 'Poppins', sans-serif;
     background-color: #14151A; /* Matching the landing page dark background */
     color: #EAECEF; /* Lighter grey for text */
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 20px;
+    padding: 0;
     position: relative;
     background-image: radial-gradient(circle at 30% 50%, rgba(240, 185, 11, 0.05) 0%, transparent 70%);
+    overflow: hidden;
 }
 
 .container {
@@ -19,9 +20,12 @@
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.7), 0 0 15px rgba(240, 185, 11, 0.2);
     overflow: hidden;
     width: 100%;
-    max-width: 420px;
+    max-width: 400px;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(240, 185, 11, 0.1);
+    display: flex;
+    flex-direction: column;
+    padding-top: 0;
 }
 
 .container::before {
@@ -50,12 +54,26 @@
 }
 
 .formContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
     position: relative;
-    z-index: 2; /* Ensure form elements are above the animation */
+    overflow: hidden;
+    min-height: 400px; /* Ensure consistent height */
+}
+
+.form {
+    padding: 30px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    transition: transform 0.5s ease-in-out;
 }
 
 .formContainer h2 {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Poppins', sans-serif;
     color: #F0B90B; /* Binance Yellow */
     margin-bottom: 30px;
     font-size: 2em;
@@ -64,19 +82,19 @@
 }
 
 .inputGroup {
-    margin-bottom: 25px;
+    margin-bottom: 15px;
     position: relative;
 }
 
 .inputGroup input {
     width: 100%;
-    padding: 15px 15px;
+    padding: 12px 15px;
     background-color: rgba(20, 21, 26, 0.5); /* Slightly transparent dark background */
     border: 1px solid #474d57; /* Neutral dark border */
     border-radius: 8px;
     color: #EAECEF;
-    font-size: 1em;
-    font-family: 'Exo 2', sans-serif;
+    font-size: 0.95em;
+    font-family: 'Poppins', sans-serif;
     transition: all 0.3s ease;
     box-sizing: border-box;
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -94,45 +112,48 @@
     transform: translateY(-1px);
 }
 
-.form h2 {
-    margin-top: 0;
-    margin-bottom: 25px;
-    color: #F0B90B; /* Binance Yellow */
-    text-align: center;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.8rem;
-    letter-spacing: 1px;
-    position: relative;
-    display: inline-block;
-    width: 100%;
-}
-
-.form h2::after {
-    content: '';
-    position: absolute;
-    width: 60px;
-    height: 3px;
-    background-color: #F0B90B;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 2px;
-}
-
 .btn {
-    background-color: #F0B90B; /* Binance Yellow */
-    color: #14151A; /* Dark text for contrast on yellow button */
-    padding: 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1.1em;
-    font-family: 'Orbitron', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 1px;
     width: 100%;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    margin-top: 10px;
+    padding: 12px;
+    background-color: #F0B90B; /* Binance Yellow */
+    border: none;
+    border-radius: 8px;
+    color: #14151A; /* Very dark text on yellow button for contrast */
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 5px;
+}
+
+/* Invalid credentials button styles */
+.invalidBtn {
+    background-color: #e74c3c; /* Red color for invalid state */
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.invalidBtn:hover {
+    animation: dodge 0.5s ease infinite;
+    background-color: #e74c3c;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes dodge {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    50% { transform: translateX(10px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
 }
 
 .btn:hover {
@@ -151,8 +172,8 @@
 
 .toggleText {
     text-align: center;
-    margin-top: 25px;
-    font-size: 0.95em;
+    margin-top: 15px;
+    font-size: 0.9em;
     color: #EAECEF;
 }
 
@@ -180,11 +201,70 @@
     text-decoration: underline;
 }
 
+.toggleContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px 0 10px;
+    background-color: #232730;
+    border-bottom: 1px solid rgba(240, 185, 11, 0.1);
+}
+
+.toggleButton {
+    position: relative;
+    display: flex;
+    width: 80%;
+    max-width: 300px;
+    height: 45px;
+    background-color: #1A1D24;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.toggleOption {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #EAECEF;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    z-index: 2;
+    user-select: none;
+}
+
+.activeOption {
+    color: #14151A;
+    font-weight: 600;
+}
+
+.slider {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: calc(50% - 6px);
+    height: calc(100% - 6px);
+    background-color: #F0B90B;
+    border-radius: 22px;
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    z-index: 1;
+}
+
+.toggleRight .slider {
+    transform: translateX(100%);
+}
+
+.toggleLeft .slider {
+    transform: translateX(0);
+}
+
 .brandingLogo {
     position: absolute; /* Positioned relative to the .body or a suitable parent */
     top: 20px;
     left: 20px;
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 1.5em; /* Adjust size as needed */
     font-weight: 700;
     color: #F0B90B; /* Binance Yellow */
