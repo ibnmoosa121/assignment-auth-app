@@ -25,7 +25,7 @@ export default function AuthPage() {
         setInvalidCredentials(false); // Reset invalid credentials state
     };
 
-    const handleSignInSubmit = async (e) => {
+    const handleSignInSubmit = (e) => {
         e.preventDefault();
         setMessage('');
         setError('');
@@ -33,31 +33,28 @@ export default function AuthPage() {
         const email = e.target.signInEmail.value;
         const password = e.target.signInPassword.value;
 
-        try {
-            const { data, error: signInError } = await supabase.auth.signInWithPassword({
-                email: email,
-                password: password,
+        supabase.auth.signInWithPassword({ email, password })
+            .then(({ data, error: signInError }) => {
+                if (signInError) {
+                    // console.error('Sign in error:', signInError.message); // Already commented
+                    alert(`Sign in failed: ${signInError.message}`);
+                    // setInvalidCredentials(true); // Already commented
+                    // No explicit return needed here as it's the end of this promise chain path
+                } else {
+                    console.log('Sign in successful:', data);
+                    setMessage('Sign in successful! Redirecting to home page...');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                }
+            })
+            .catch(error => { // Catches if signInWithPassword itself rejects (e.g. network issue)
+                // console.error('Unexpected error during sign in:', error); // Already commented
+                alert('An unexpected error occurred. Please try again.');
             });
-
-            if (signInError) {
-                console.error('Sign in error:', signInError);
-                setError(`Sign in failed: ${signInError.message}`);
-                setInvalidCredentials(true); // Set invalid credentials to trigger button animation
-            } else {
-                console.log('Sign in successful:', data);
-                setMessage('Sign in successful! Redirecting to home page...');
-                // Redirect to landing page after a brief delay to show the success message
-                setTimeout(() => {
-                    window.location.href = '/';
-                }, 1500);
-            }
-        } catch (error) {
-            console.error('Unexpected error during sign in:', error);
-            setError('An unexpected error occurred. Please try again.');
-        }
     };
 
-    const handleSignUpSubmit = async (e) => {
+    const handleSignUpSubmit = (e) => {
         e.preventDefault();
         setMessage('');
         setError('');
@@ -65,32 +62,29 @@ export default function AuthPage() {
         const email = e.target.signUpEmail.value;
         const password = e.target.signUpPassword.value;
         const confirmPassword = e.target.confirmPassword.value;
-        // const username = e.target.signUpUsername.value; // Optional: for later use
 
         if (password !== confirmPassword) {
-            setError('Passwords do not match.');
+            alert('Passwords do not match.');
             return;
         }
 
-        const { data, error: signUpError } = await supabase.auth.signUp({
-            email: email,
-            password: password,
-            // options: { // Optional: include additional data like username
-            //   data: {
-            //     username: username,
-            //   }
-            // }
-        });
-
-        if (signUpError) {
-            console.error('Sign up error:', signUpError);
-            setError(`Sign up failed: ${signUpError.message}`);
-        } else {
-            console.log('Sign up successful:', data);
-            setMessage('Sign up successful! Please check your email to confirm.');
-            // Optionally, you can reset the form or redirect the user
-            e.target.reset(); // Reset form fields
-        }
+        supabase.auth.signUp({ email, password })
+            .then(({ data, error: signUpError }) => {
+                if (signUpError) {
+                    // console.error('Sign up error:', signUpError); // Already commented
+                    alert(`Sign up failed: ${signUpError.message}`);
+                    // No explicit return needed here as it's the end of this promise chain path
+                } else {
+                    console.log('Sign up successful:', data);
+                    setMessage('Sign up successful! Please check your email to confirm.');
+                    e.target.reset(); // Reset form fields
+                }
+            })
+            .catch(error => {
+                // This catch is for unexpected errors during the signUp call itself (e.g. network)
+                // console.error('Unexpected error during sign up:', error);
+                alert('An unexpected error occurred during sign up. Please try again.');
+            });
     };
 
     return (
