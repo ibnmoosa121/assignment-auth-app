@@ -6,8 +6,6 @@ import { supabase } from './supabaseClient';
 export default function AuthPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [message, setMessage] = useState('');
-    const [error, setError] = useState('');
-    const [invalidCredentials, setInvalidCredentials] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -20,7 +18,6 @@ export default function AuthPage() {
     const handleSignInSubmit = (e) => {
         e.preventDefault();
         setMessage('');
-        setError('');
 
         const email = e.target.signInEmail.value;
         const password = e.target.signInPassword.value;
@@ -49,7 +46,6 @@ export default function AuthPage() {
     const handleSignUpSubmit = (e) => {
         e.preventDefault();
         setMessage('');
-        setError('');
 
         const email = e.target.signUpEmail.value;
         const password = e.target.signUpPassword.value;
@@ -98,19 +94,17 @@ export default function AuthPage() {
                             <form id="signInForm" className={styles.form} onSubmit={handleSignInSubmit}>
                                 <h2>Sign In</h2>
                                 {message && <p className={styles.successMessage}>{message}</p>}
-                                {error && <p className={styles.errorMessage}>{error}</p>}
                                 <div className={styles.inputGroup}>
                                     <input type="email" id="signInEmail" placeholder="Email or Username" required />
                                 </div>
                                 <div className={styles.inputGroup}>
                                     <input type="password" id="signInPassword" placeholder="Password" required />
                                 </div>
-                                <button type="submit" className={`${styles.btn} ${invalidCredentials ? styles.invalidBtn : ''}`}>Sign In</button>
+                                <button type="submit" className={styles.btn}>Sign In</button>
                             </form>
                             <form id="signUpForm" className={styles.form} onSubmit={handleSignUpSubmit}>
                                 <h2>Sign Up</h2>
                                 {message && <p className={styles.successMessage}>{message}</p>}
-                                {error && <p className={styles.errorMessage}>{error}</p>}
                                 <div className={styles.inputGroup}>
                                     <input type="text" id="signUpUsername" placeholder="Username" required />
                                 </div>
