@@ -50,7 +50,7 @@ export default function Home() {
         <div className={styles.auth}>
           {user ? (
             <div className={styles.userSection}>
-              <span className={styles.userEmail}>{user.email}</span>
+              <span className={styles.userEmail}>{user.user_metadata?.username || user.email}</span>
               <button onClick={handleSignOut} className={styles.signOutBtn}>Sign Out</button>
             </div>
           ) : (

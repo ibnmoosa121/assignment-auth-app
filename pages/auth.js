@@ -14,6 +14,28 @@ export default function AuthPage() {
             setIsLoading(false);
         }, 3000);
 
+        // Check for email confirmation
+        const checkEmailConfirmation = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            // Get the URL hash parameters
+            const hash = window.location.hash.substring(1);
+            const params = new URLSearchParams(hash);
+            
+            // Check if this is a confirmation callback
+            if (params.get('type') === 'signup' && params.get('access_token')) {
+                setShowSignUp(false); // Switch to sign in form
+                setMessage('Email verified! Please sign in with your credentials.');
+                
+                // Clear the hash to avoid showing the message again on refresh
+                if (typeof window !== 'undefined') {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
+        };
+        
+        checkEmailConfirmation();
+        
         return () => clearTimeout(timer);
     }, []);
 
@@ -49,6 +71,7 @@ export default function AuthPage() {
         e.preventDefault();
         setMessage('');
 
+        const username = e.target.signUpUsername.value;
         const email = e.target.signUpEmail.value;
         const password = e.target.signUpPassword.value;
         const confirmPassword = e.target.confirmPassword.value;
@@ -58,7 +81,15 @@ export default function AuthPage() {
             return;
         }
 
-        supabase.auth.signUp({ email, password })
+        supabase.auth.signUp({ 
+            email, 
+            password,
+            options: {
+                data: {
+                    username: username
+                }
+            }
+        })
             .then(({ data, error: signUpError }) => {
                 if (signUpError) {
                     // console.error('Sign up error:', signUpError); // Already commented
