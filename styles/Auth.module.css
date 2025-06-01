@@ -170,6 +170,53 @@
     transform: translateY(0);
 }
 
+/* Styles for the slider toggle */
+.toggleContainer {
+    display: flex;
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    height: 40px;
+    margin: 20px auto;
+    border-radius: 20px;
+    background-color: rgba(20, 21, 26, 0.5);
+    border: 1px solid #474d57;
+    overflow: hidden;
+}
+
+.toggleOption {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    font-size: 0.9em;
+    font-weight: 600;
+    transition: color 0.3s ease;
+    color: #888;
+}
+
+.toggleOption.active {
+    color: #14151A;
+}
+
+.toggleSlider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: calc(50% - 4px);
+    height: calc(100% - 4px);
+    background-color: #F0B90B;
+    border-radius: 18px;
+    transition: transform 0.3s ease;
+    z-index: 1;
+}
+
+.toggleSlider.right {
+    transform: translateX(calc(100% + 4px));
+}
+
 .toggleText {
     text-align: center;
     margin-top: 15px;

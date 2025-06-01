@@ -1,12 +1,13 @@
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import styles from '../styles/Auth.module.css';
-import { supabase } from './supabaseClient';
+import { supabase } from '../utils/supabaseClient';
 
 export default function AuthPage() {
     console.log("<<<<<< BUILDING LATEST AUTH PAGE - VERCEL TEST >>>>>>");
     const [isLoading, setIsLoading] = useState(true);
     const [message, setMessage] = useState('');
+    const [showSignUp, setShowSignUp] = useState(false); // Added state for toggling forms
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -38,9 +39,9 @@ export default function AuthPage() {
                     }, 1500);
                 }
             })
-            .catch(error => { // Catches if signInWithPassword itself rejects (e.g. network issue)
-                // console.error('Unexpected error during sign in:', error); // Already commented
-                alert('An unexpected error occurred. Please try again.');
+            .catch(() => { // Catches if signInWithPassword itself rejects (e.g. network issue)
+                // console.error('Unexpected error during sign in'); // Already commented
+                alert('An unexpected error occurred. Please try again');
             });
     };
 
@@ -69,9 +70,9 @@ export default function AuthPage() {
                     e.target.reset(); // Reset form fields
                 }
             })
-            .catch(error => {
+            .catch(() => {
                 // This catch is for unexpected errors during the signUp call itself (e.g. network)
-                // console.error('Unexpected error during sign up:', error);
+                // console.error('Unexpected error during sign up');
                 alert('An unexpected error occurred during sign up. Please try again.');
             });
     };
@@ -91,35 +92,54 @@ export default function AuthPage() {
                     <div className={styles.brandingLogo}>NovaP2P</div>
 
                     <div className={styles.container}>
+                        <div className={styles.toggleContainer}>
+                            <div 
+                                className={`${styles.toggleOption} ${!showSignUp ? styles.active : ''}`}
+                                onClick={() => { setShowSignUp(false); setMessage(''); }}
+                            >
+                                Sign In
+                            </div>
+                            <div 
+                                className={`${styles.toggleOption} ${showSignUp ? styles.active : ''}`}
+                                onClick={() => { setShowSignUp(true); setMessage(''); }}
+                            >
+                                Sign Up
+                            </div>
+                            <div className={`${styles.toggleSlider} ${showSignUp ? styles.right : ''}`}></div>
+                        </div>
                         <div className={styles.formContainer}>
-                            <form id="signInForm" className={styles.form} onSubmit={handleSignInSubmit}>
-                                <h2>Sign In</h2>
-                                {message && <p className={styles.successMessage}>{message}</p>}
-                                <div className={styles.inputGroup}>
-                                    <input type="email" id="signInEmail" placeholder="Email or Username" required />
-                                </div>
-                                <div className={styles.inputGroup}>
-                                    <input type="password" id="signInPassword" placeholder="Password" required />
-                                </div>
-                                <button type="submit" className={styles.btn}>Sign In</button>
-                            </form>
-                            <form id="signUpForm" className={styles.form} onSubmit={handleSignUpSubmit}>
-                                <h2>Sign Up</h2>
-                                {message && <p className={styles.successMessage}>{message}</p>}
-                                <div className={styles.inputGroup}>
-                                    <input type="text" id="signUpUsername" placeholder="Username" required />
-                                </div>
-                                <div className={styles.inputGroup}>
-                                    <input type="email" id="signUpEmail" placeholder="Email" required />
-                                </div>
-                                <div className={styles.inputGroup}>
-                                    <input type="password" id="signUpPassword" placeholder="Password" required />
-                                </div>
-                                <div className={styles.inputGroup}>
-                                    <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
-                                </div>
-                                <button type="submit" className={styles.btn}>Sign Up</button>
-                            </form>
+                            {showSignUp ? (
+                                <form id="signUpForm" className={styles.form} onSubmit={handleSignUpSubmit}>
+                                    <h2>Sign Up</h2>
+                                    {message && <p className={styles.successMessage}>{message}</p>}
+                                    <div className={styles.inputGroup}>
+                                        <input type="text" id="signUpUsername" name="signUpUsername" placeholder="Username" required />
+                                    </div>
+                                    <div className={styles.inputGroup}>
+                                        <input type="email" id="signUpEmail" name="signUpEmail" placeholder="Email" required />
+                                    </div>
+                                    <div className={styles.inputGroup}>
+                                        <input type="password" id="signUpPassword" name="signUpPassword" placeholder="Password" required />
+                                    </div>
+                                    <div className={styles.inputGroup}>
+                                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required />
+                                    </div>
+                                    <button type="submit" className={styles.btn}>Sign Up</button>
+                                </form>
+                            ) : (
+                                <form id="signInForm" className={styles.form} onSubmit={handleSignInSubmit}>
+                                    <h2>Sign In</h2>
+                                    {message && <p className={styles.successMessage}>{message}</p>}
+                                    <div className={styles.inputGroup}>
+                                        <input type="email" id="signInEmail" name="signInEmail" placeholder="Email or Username" required />
+                                    </div>
+                                    <div className={styles.inputGroup}>
+                                        <input type="password" id="signInPassword" name="signInPassword" placeholder="Password" required />
+                                    </div>
+                                    <button type="submit" className={styles.btn}>Sign In</button>
+                                </form>
+                            )}
+
                         </div>
                     </div>
                 </div>

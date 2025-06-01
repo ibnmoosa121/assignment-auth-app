@@ -2,7 +2,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import styles from '../styles/Home.module.css';
-import { supabase } from './supabaseClient';
+import { supabase } from '../utils/supabaseClient';
 
 export default function Home() {
   const [user, setUser] = useState(null);
