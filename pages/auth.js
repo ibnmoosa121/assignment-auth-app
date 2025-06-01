@@ -16,21 +16,34 @@ export default function AuthPage() {
 
         // Check for email confirmation
         const checkEmailConfirmation = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            
-            // Get the URL hash parameters
-            const hash = window.location.hash.substring(1);
-            const params = new URLSearchParams(hash);
-            
-            // Check if this is a confirmation callback
-            if (params.get('type') === 'signup' && params.get('access_token')) {
-                setShowSignUp(false); // Switch to sign in form
-                setMessage('Email verified! Please sign in with your credentials.');
+            try {
+                // Get the URL hash parameters
+                const hash = window.location.hash.substring(1);
+                const params = new URLSearchParams(hash);
                 
-                // Clear the hash to avoid showing the message again on refresh
-                if (typeof window !== 'undefined') {
-                    window.history.replaceState({}, document.title, window.location.pathname);
+                // Check if this is a confirmation callback
+                const isConfirmation = (
+                    // Check for the standard confirmation format
+                    (params.get('type') === 'signup' && params.get('access_token')) ||
+                    // Check for the alternative format
+                    (hash.includes('access_token') && hash.includes('type=signup'))
+                );
+                
+                if (isConfirmation) {
+                    // Let Supabase handle the auth session first
+                    await supabase.auth.getSession();
+                    
+                    // Switch to sign in form and show message
+                    setShowSignUp(false);
+                    setMessage('Email verified! Please sign in with your credentials.');
+                    
+                    // Clear the hash to avoid showing the message again on refresh
+                    if (typeof window !== 'undefined') {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
                 }
+            } catch (error) {
+                console.error('Error checking email confirmation:', error);
             }
         };
         
