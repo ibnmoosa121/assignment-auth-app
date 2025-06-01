@@ -1,0 +1,9 @@
+# Copy these environment variables to your .env.local file
+# Make sure to replace the values with your actual Supabase credentials
+
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_SITE_URL=https://assignment-auth-app.vercel.app
+
+# For local development, you can also set this to:
+# NEXT_PUBLIC_SITE_URL=http://localhost:3000
