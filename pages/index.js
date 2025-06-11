@@ -63,50 +63,141 @@ export default function Home() {
       </header>
 
       <main className={styles.main}>
+        <div className={styles.particles}></div>
+        
         <section className={styles.hero}>
+          <div className={styles.heroGlow}></div>
           <div className={styles.heroContent}>
-            <h1 className={styles.title}>The Future of <span className={styles.highlight}>Crypto Trading</span></h1>
+            <div className={styles.tagline}>Revolutionary Crypto Exchange</div>
+            <h1 className={styles.title}>
+              <span className={styles.titleLine}>Trade Crypto</span>
+              <span className={styles.titleLine}>With <span className={styles.highlight}>Confidence</span></span>
+            </h1>
             <p className={styles.subtitle}>
-              Secure, Fast, and Decentralized P2P Trading Platform
+              Experience the next generation of secure, fast, and decentralized P2P trading
             </p>
             <div className={styles.ctaButtons}>
               <Link href="/auth" className={styles.primaryButton}>
-                Start Trading
+                <span className={styles.btnText}>Start Trading</span>
+                <span className={styles.btnIcon}>→</span>
               </Link>
               <a href="#learn" className={styles.secondaryButton}>
-                Learn More
+                <span className={styles.btnText}>Learn More</span>
               </a>
             </div>
+            
+            <div className={styles.statsContainer}>
+              <div className={styles.statItem}>
+                <span className={styles.statValue}>$2.4B+</span>
+                <span className={styles.statLabel}>Trading Volume</span>
+              </div>
+              <div className={styles.statItem}>
+                <span className={styles.statValue}>120+</span>
+                <span className={styles.statLabel}>Countries</span>
+              </div>
+              <div className={styles.statItem}>
+                <span className={styles.statValue}>2M+</span>
+                <span className={styles.statLabel}>Users</span>
+              </div>
+            </div>
           </div>
-          <div className={styles.heroImage}>
-            {/* This would be a crypto-related image or animation */}
-            <div className={styles.cryptoOrb}></div>
+          
+          <div className={styles.heroVisual}>
+            <div className={styles.orbContainer}>
+              <div className={styles.cryptoOrb}>
+                <div className={styles.orbCore}></div>
+                <div className={styles.orbRing1}></div>
+                <div className={styles.orbRing2}></div>
+                <div className={styles.orbRing3}></div>
+              </div>
+              <div className={styles.floatingCoins}>
+                <div className={`${styles.floatingCoin} ${styles.coin1}`}>₿</div>
+                <div className={`${styles.floatingCoin} ${styles.coin2}`}>Ξ</div>
+                <div className={`${styles.floatingCoin} ${styles.coin3}`}>Ł</div>
+                <div className={`${styles.floatingCoin} ${styles.coin4}`}>Ð</div>
+              </div>
+            </div>
+            <div className={styles.glowingLines}></div>
           </div>
         </section>
 
         <section id="features" className={styles.features}>
-          <h2 className={styles.sectionTitle}>Why Choose NovaP2P?</h2>
+          <div className={styles.sectionHeader}>
+            <div className={styles.sectionAccent}></div>
+            <h2 className={styles.sectionTitle}>Why Choose <span className={styles.highlight}>NovaP2P</span>?</h2>
+            <p className={styles.sectionSubtitle}>Experience the advantages of our next-generation trading platform</p>
+          </div>
+          
           <div className={styles.featureGrid}>
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>🔒</div>
-              <h3>Secure Transactions</h3>
-              <p>Advanced encryption and multi-signature wallets for maximum security.</p>
+              <div className={styles.featureIconWrapper}>
+                <div className={styles.featureIcon}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </div>
+              </div>
+              <h3 className={styles.featureTitle}>Secure Transactions</h3>
+              <p className={styles.featureDescription}>Advanced encryption and multi-signature wallets provide bank-grade security for all your transactions.</p>
+              <div className={styles.featureHover}></div>
             </div>
+            
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>⚡</div>
-              <h3>Lightning Fast</h3>
-              <p>Complete transactions in seconds, not minutes or hours.</p>
+              <div className={styles.featureIconWrapper}>
+                <div className={styles.featureIcon}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="13" y1="2" x2="13" y2="22"></line>
+                    <polyline points="19 8 13 2 7 8"></polyline>
+                    <line x1="11" y1="22" x2="11" y2="2"></line>
+                    <polyline points="5 16 11 22 17 16"></polyline>
+                  </svg>
+                </div>
+              </div>
+              <h3 className={styles.featureTitle}>Lightning Fast</h3>
+              <p className={styles.featureDescription}>Complete transactions in seconds with our optimized blockchain integration and efficient matching engine.</p>
+              <div className={styles.featureHover}></div>
             </div>
+            
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>💰</div>
-              <h3>Low Fees</h3>
-              <p>Competitive fee structure that keeps more money in your wallet.</p>
+              <div className={styles.featureIconWrapper}>
+                <div className={styles.featureIcon}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                  </svg>
+                </div>
+              </div>
+              <h3 className={styles.featureTitle}>Low Fees</h3>
+              <p className={styles.featureDescription}>Our competitive fee structure ensures you keep more of your profits with every trade you make.</p>
+              <div className={styles.featureHover}></div>
             </div>
+            
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>🌐</div>
-              <h3>Global Access</h3>
-              <p>Trade with users from around the world with multiple payment options.</p>
+              <div className={styles.featureIconWrapper}>
+                <div className={styles.featureIcon}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                  </svg>
+                </div>
+              </div>
+              <h3 className={styles.featureTitle}>Global Access</h3>
+              <p className={styles.featureDescription}>Trade with users from over 120 countries with support for multiple payment methods and currencies.</p>
+              <div className={styles.featureHover}></div>
             </div>
+          </div>
+          
+          <div className={styles.featureCallout}>
+            <div className={styles.calloutContent}>
+              <h3>Ready to start trading?</h3>
+              <p>Join thousands of traders worldwide on NovaP2P</p>
+            </div>
+            <Link href="/auth" className={styles.calloutButton}>
+              Create Account
+            </Link>
           </div>
         </section>
       </main>
