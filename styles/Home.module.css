@@ -17,15 +17,15 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid rgba(240, 185, 11, 0.2);
+  border-bottom: 1px solid rgba(38, 193, 126, 0.2);
 }
 
 .logo {
   font-family: 'Poppins', sans-serif;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #F0B90B;
-  text-shadow: 0 0 10px rgba(240, 185, 11, 0.5);
+  color: #26C17E;
+  text-shadow: 0 0 10px rgba(38, 193, 126, 0.5);
 }
 
 .nav {
@@ -42,7 +42,7 @@
 }
 
 .navLink:hover {
-  color: #F0B90B;
+  color: #26C17E;
 }
 
 .navLink::after {
@@ -52,7 +52,7 @@
   height: 2px;
   bottom: -5px;
   left: 0;
-  background-color: #F0B90B;
+  background-color: #26C17E;
   transition: width 0.3s ease;
 }
 
@@ -66,7 +66,7 @@
 }
 
 .authButton {
-  background-color: #F0B90B;
+  background-color: #26C17E;
   color: #14151A;
   border: none;
   padding: 0.6rem 1.5rem;
@@ -79,8 +79,8 @@
 }
 
 .authButton:hover {
-  background-color: #F8D12F;
-  box-shadow: 0 0 15px rgba(240, 185, 11, 0.7);
+  background-color: #33d695;
+  box-shadow: 0 0 15px rgba(38, 193, 126, 0.7);
   transform: translateY(-2px);
 }
 
@@ -91,14 +91,14 @@
 }
 
 .userEmail {
-  color: #F0B90B;
+  color: #26C17E;
   font-size: 0.9rem;
 }
 
 .signOutBtn {
   background-color: transparent;
-  border: 1px solid #F0B90B;
-  color: #F0B90B;
+  border: 1px solid #26C17E;
+  color: #26C17E;
   padding: 0.4rem 1rem;
   border-radius: 4px;
   cursor: pointer;
@@ -106,7 +106,7 @@
 }
 
 .signOutBtn:hover {
-  background-color: rgba(240, 185, 11, 0.1);
+  background-color: rgba(38, 193, 126, 0.1);
 }
 
 /* Main and particles */
@@ -121,7 +121,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: radial-gradient(circle at 50% 50%, rgba(240, 185, 11, 0.05) 0%, transparent 25%);
+  background-image: radial-gradient(circle at 50% 50%, rgba(38, 193, 126, 0.05) 0%, transparent 25%);
   background-size: 15px 15px;
   z-index: 0;
   opacity: 0.6;
@@ -145,7 +145,7 @@
   left: -10%;
   width: 70%;
   height: 150%;
-  background: radial-gradient(ellipse at center, rgba(240, 185, 11, 0.15) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(38, 193, 126, 0.15) 0%, transparent 70%);
   filter: blur(60px);
   z-index: 0;
   animation: glow 8s ease-in-out infinite alternate;
@@ -166,7 +166,7 @@
   font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 3px;
-  color: #F0B90B;
+  color: #26C17E;
   margin-bottom: 1.5rem;
   font-weight: 500;
   position: relative;
@@ -181,7 +181,7 @@
   top: 50%;
   width: 20px;
   height: 2px;
-  background-color: #F0B90B;
+  background-color: #26C17E;
   transform: translateY(-50%);
 }
 
@@ -200,7 +200,7 @@
 }
 
 .highlight {
-  color: #F0B90B;
+  color: #26C17E;
   position: relative;
   display: inline-block;
 }
@@ -212,7 +212,7 @@
   height: 8px;
   bottom: 5px;
   left: 0;
-  background-color: rgba(240, 185, 11, 0.2);
+  background-color: rgba(38, 193, 126, 0.2);
   z-index: -1;
   transform: skewX(-15deg);
 }
@@ -233,7 +233,7 @@
 }
 
 .primaryButton {
-  background: linear-gradient(90deg, #F0B90B, #F8D12F);
+  background: linear-gradient(90deg, #26C17E, #33d695);
   color: #14151A;
   border: none;
   padding: 0.8rem 2rem;
@@ -266,7 +266,7 @@
 }
 
 .primaryButton:hover {
-  box-shadow: 0 0 20px rgba(240, 185, 11, 0.7);
+  box-shadow: 0 0 20px rgba(38, 193, 126, 0.7);
   transform: translateY(-3px);
 }
 
@@ -287,9 +287,9 @@
 }
 
 .secondaryButton {
-  background-color: rgba(240, 185, 11, 0.05);
-  border: 1px solid rgba(240, 185, 11, 0.3);
-  color: #F0B90B;
+  background-color: rgba(38, 193, 126, 0.05);
+  border: 1px solid rgba(38, 193, 126, 0.3);
+  color: #26C17E;
   padding: 0.8rem 2rem;
   border-radius: 30px;
   font-weight: 600;
@@ -301,9 +301,9 @@
 }
 
 .secondaryButton:hover {
-  background-color: rgba(240, 185, 11, 0.1);
-  border-color: #F0B90B;
-  box-shadow: 0 0 15px rgba(240, 185, 11, 0.3);
+  background-color: rgba(38, 193, 126, 0.1);
+  border-color: #26C17E;
+  box-shadow: 0 0 15px rgba(38, 193, 126, 0.3);
 }
 
 /* Stats section */
@@ -321,7 +321,7 @@
 .statValue {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #F0B90B;
+  color: #26C17E;
   margin-bottom: 0.3rem;
 }
 
@@ -360,16 +360,16 @@
 .orbCore {
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, #F0B90B 0%, rgba(240, 185, 11, 0.3) 70%, transparent 100%);
+  background: radial-gradient(circle at center, #26C17E 0%, rgba(38, 193, 126, 0.3) 70%, transparent 100%);
   border-radius: 50%;
-  box-shadow: 0 0 60px rgba(240, 185, 11, 0.6);
+  box-shadow: 0 0 60px rgba(38, 193, 126, 0.6);
   position: relative;
 }
 
 .orbRing1, .orbRing2, .orbRing3 {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid rgba(240, 185, 11, 0.3);
+  border: 1px solid rgba(38, 193, 126, 0.3);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -404,7 +404,7 @@
 .floatingCoin {
   position: absolute;
   font-size: 1.8rem;
-  color: #F0B90B;
+  color: #26C17E;
   background: rgba(20, 21, 26, 0.8);
   width: 50px;
   height: 50px;
@@ -412,7 +412,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 0 15px rgba(240, 185, 11, 0.5);
+  box-shadow: 0 0 15px rgba(38, 193, 126, 0.5);
 }
 
 .coin1 {
@@ -445,7 +445,7 @@
   height: 100%;
   top: 0;
   left: 0;
-  background-image: linear-gradient(45deg, rgba(240, 185, 11, 0.1) 25%, transparent 25%, transparent 50%, rgba(240, 185, 11, 0.1) 50%, rgba(240, 185, 11, 0.1) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(38, 193, 126, 0.1) 25%, transparent 25%, transparent 50%, rgba(38, 193, 126, 0.1) 50%, rgba(38, 193, 126, 0.1) 75%, transparent 75%, transparent);
   background-size: 20px 20px;
   opacity: 0.3;
   animation: moveLines 20s linear infinite;
@@ -483,7 +483,7 @@
   font-size: 2.5rem;
   margin-bottom: 2rem;
   text-align: center;
-  color: #F0B90B;
+  color: #26C17E;
 }
 
 .marketTable {
@@ -508,12 +508,12 @@
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
   padding: 1rem;
-  border-bottom: 1px solid rgba(240, 185, 11, 0.1);
+  border-bottom: 1px solid rgba(38, 193, 126, 0.1);
   transition: background-color 0.3s ease;
 }
 
 .tableRow:hover {
-  background-color: rgba(240, 185, 11, 0.05);
+  background-color: rgba(38, 193, 126, 0.05);
 }
 
 .tableCell {
@@ -544,7 +544,7 @@
 }
 
 .tradeButton {
-  background-color: #F0B90B;
+  background-color: #26C17E;
   color: #14151A;
   border: none;
   padding: 0.4rem 1rem;
@@ -555,7 +555,7 @@
 }
 
 .tradeButton:hover {
-  background-color: #F8D12F;
+  background-color: #33d695;
   transform: translateY(-2px);
 }
 
@@ -577,7 +577,7 @@
   position: absolute;
   width: 60px;
   height: 4px;
-  background: linear-gradient(90deg, transparent, #F0B90B, transparent);
+  background: linear-gradient(90deg, transparent, #26C17E, transparent);
   top: -20px;
   left: 50%;
   transform: translateX(-50%);
@@ -588,7 +588,7 @@
   font-size: 2.8rem;
   margin-bottom: 1rem;
   font-weight: 700;
-  background: linear-gradient(90deg, #EAECEF, #F0B90B, #EAECEF);
+  background: linear-gradient(90deg, #EAECEF, #26C17E, #EAECEF);
   background-size: 200% auto;
   background-clip: text;
   -webkit-background-clip: text;
@@ -622,7 +622,7 @@
   padding: 2.5rem 2rem;
   text-align: center;
   transition: all 0.4s ease;
-  border: 1px solid rgba(240, 185, 11, 0.1);
+  border: 1px solid rgba(38, 193, 126, 0.1);
   position: relative;
   overflow: hidden;
   backdrop-filter: blur(5px);
@@ -631,7 +631,7 @@
 
 .featureCard:hover {
   transform: translateY(-10px);
-  border-color: rgba(240, 185, 11, 0.4);
+  border-color: rgba(38, 193, 126, 0.4);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
 }
 
@@ -642,7 +642,7 @@
 .featureIconWrapper {
   width: 80px;
   height: 80px;
-  background: rgba(240, 185, 11, 0.1);
+  background: rgba(38, 193, 126, 0.1);
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -659,14 +659,14 @@
   right: -5px;
   bottom: -5px;
   border-radius: 50%;
-  border: 1px dashed rgba(240, 185, 11, 0.3);
+  border: 1px dashed rgba(38, 193, 126, 0.3);
   animation: rotate 10s linear infinite;
 }
 
 .featureIcon {
   width: 40px;
   height: 40px;
-  color: #F0B90B;
+  color: #26C17E;
   position: relative;
   z-index: 2;
 }
@@ -675,7 +675,7 @@
   margin: 0 0 1rem 0;
   font-weight: 600;
   font-size: 1.4rem;
-  color: #F0B90B;
+  color: #26C17E;
 }
 
 .featureDescription {
@@ -691,7 +691,7 @@
   right: -50%;
   width: 200px;
   height: 200px;
-  background: radial-gradient(circle, #F0B90B, transparent);
+  background: radial-gradient(circle, #26C17E, transparent);
   border-radius: 50%;
   opacity: 0;
   transition: opacity 0.4s ease;
@@ -699,7 +699,7 @@
 }
 
 .featureCallout {
-  background: linear-gradient(90deg, rgba(240, 185, 11, 0.1), rgba(240, 185, 11, 0.2), rgba(240, 185, 11, 0.1));
+  background: linear-gradient(90deg, rgba(38, 193, 126, 0.1), rgba(38, 193, 126, 0.2), rgba(38, 193, 126, 0.1));
   border-radius: 16px;
   padding: 3rem;
   max-width: 1000px;
@@ -707,7 +707,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid rgba(240, 185, 11, 0.2);
+  border: 1px solid rgba(38, 193, 126, 0.2);
   position: relative;
   overflow: hidden;
 }
@@ -726,7 +726,7 @@
 .calloutContent h3 {
   font-size: 1.8rem;
   margin-bottom: 0.5rem;
-  color: #F0B90B;
+  color: #26C17E;
 }
 
 .calloutContent p {
@@ -735,7 +735,7 @@
 }
 
 .calloutButton {
-  background: #F0B90B;
+  background: #26C17E;
   color: #14151A;
   padding: 0.8rem 2rem;
   border-radius: 30px;
@@ -743,12 +743,12 @@
   text-decoration: none;
   transition: all 0.3s ease;
   white-space: nowrap;
-  box-shadow: 0 5px 15px rgba(240, 185, 11, 0.3);
+  box-shadow: 0 5px 15px rgba(38, 193, 126, 0.3);
 }
 
 .calloutButton:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(240, 185, 11, 0.5);
+  box-shadow: 0 8px 25px rgba(38, 193, 126, 0.5);
 }
 
 /* Footer styles */
@@ -766,7 +766,7 @@
   left: 0;
   width: 100%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(240, 185, 11, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(38, 193, 126, 0.3), transparent);
 }
 
 .footerContent {
@@ -784,7 +784,7 @@
   font-family: 'Poppins', sans-serif;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #F0B90B;
+  color: #26C17E;
   margin-bottom: 1.5rem;
   position: relative;
   display: inline-block;
@@ -797,7 +797,7 @@
   left: 0;
   width: 40px;
   height: 3px;
-  background-color: #F0B90B;
+  background-color: #26C17E;
 }
 
 .footerLinks {
@@ -814,7 +814,7 @@
 
 .footerColumn h4 {
   margin-bottom: 1.5rem;
-  color: #F0B90B;
+  color: #26C17E;
   font-size: 1.1rem;
   font-weight: 600;
   position: relative;
@@ -839,12 +839,12 @@
   left: 0;
   width: 0;
   height: 1px;
-  background-color: #F0B90B;
+  background-color: #26C17E;
   transition: width 0.3s ease;
 }
 
 .footerColumn a:hover {
-  color: #F0B90B;
+  color: #26C17E;
   opacity: 1;
   padding-left: 5px;
 }
@@ -885,7 +885,7 @@
   background-color: #1E2026;
   border-radius: 10px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(240, 185, 11, 0.2);
+  border: 1px solid rgba(38, 193, 126, 0.2);
 }
 
 .p2pForm {
@@ -909,7 +909,7 @@
 .formInput {
   padding: 0.75rem 1rem;
   border-radius: 5px;
-  border: 1px solid rgba(240, 185, 11, 0.3);
+  border: 1px solid rgba(38, 193, 126, 0.3);
   background-color: #2B2F36;
   color: #EAECEF;
   font-size: 1rem;
@@ -918,8 +918,8 @@
 
 .formInput:focus {
   outline: none;
-  border-color: #F0B90B;
-  box-shadow: 0 0 0 2px rgba(240, 185, 11, 0.2);
+  border-color: #26C17E;
+  box-shadow: 0 0 0 2px rgba(38, 193, 126, 0.2);
 }
 
 .formInput::placeholder {
@@ -931,7 +931,7 @@
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 5px;
-  background-color: #F0B90B;
+  background-color: #26C17E;
   color: #14151A;
   font-weight: 600;
   font-size: 1rem;
@@ -940,7 +940,7 @@
 }
 
 .submitButton:hover {
-  background-color: #F8D12F;
+  background-color: #33d695;
   transform: translateY(-2px);
 }
 
@@ -959,8 +959,8 @@
 .loadingSpinner {
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(240, 185, 11, 0.3);
-  border-top: 4px solid #F0B90B;
+  border: 4px solid rgba(38, 193, 126, 0.3);
+  border-top: 4px solid #26C17E;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -972,7 +972,7 @@
 }
 
 .activeLink {
-  color: #F0B90B;
+  color: #26C17E;
   font-weight: 600;
   position: relative;
 }
@@ -984,7 +984,7 @@
   left: 0;
   width: 100%;
   height: 2px;
-  background-color: #F0B90B;
+  background-color: #26C17E;
 }
 
 /* Responsive styles */

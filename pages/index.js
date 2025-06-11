@@ -35,13 +35,13 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>NovaP2P - Crypto P2P Marketplace</title>
+        <title>TGP2P - Crypto P2P Marketplace</title>
         <meta name="description" content="A futuristic crypto P2P marketplace" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <header className={styles.header}>
-        <div className={styles.logo}>NovaP2P</div>
+        <div className={styles.logo}>TGP2P</div>
         <nav className={styles.nav}>
           <a href="#markets" className={styles.navLink}>Markets</a>
           <Link href="/p2p" className={styles.navLink}>P2P</Link>
@@ -124,7 +124,7 @@ export default function Home() {
         <section id="features" className={styles.features}>
           <div className={styles.sectionHeader}>
             <div className={styles.sectionAccent}></div>
-            <h2 className={styles.sectionTitle}>Why Choose <span className={styles.highlight}>NovaP2P</span>?</h2>
+            <h2 className={styles.sectionTitle}>Why Choose <span className={styles.highlight}>TGP2P</span>?</h2>
             <p className={styles.sectionSubtitle}>Experience the advantages of our next-generation trading platform</p>
           </div>
           
@@ -193,7 +193,7 @@ export default function Home() {
           <div className={styles.featureCallout}>
             <div className={styles.calloutContent}>
               <h3>Ready to start trading?</h3>
-              <p>Join thousands of traders worldwide on NovaP2P</p>
+              <p>Join thousands of traders worldwide on TGP2P</p>
             </div>
             <Link href="/auth" className={styles.calloutButton}>
               Create Account
@@ -204,7 +204,7 @@ export default function Home() {
 
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
-          <div className={styles.footerLogo}>NovaP2P</div>
+          <div className={styles.footerLogo}>TGP2P</div>
           <div className={styles.footerLinks}>
             <div className={styles.footerColumn}>
               <h4>Company</h4>
@@ -233,7 +233,7 @@ export default function Home() {
           </div>
         </div>
         <div className={styles.copyright}>
-          &copy; {new Date().getFullYear()} NovaP2P. All rights reserved.
+          &copy; {new Date().getFullYear()} TGP2P. All rights reserved.
         </div>
       </footer>
     </div>
