@@ -44,6 +44,7 @@ export default function Home() {
         <div className={styles.logo}>NovaP2P</div>
         <nav className={styles.nav}>
           <a href="#markets" className={styles.navLink}>Markets</a>
+          <Link href="/p2p" className={styles.navLink}>P2P</Link>
           <a href="#trade" className={styles.navLink}>Trade</a>
           <a href="#about" className={styles.navLink}>About</a>
         </nav>
