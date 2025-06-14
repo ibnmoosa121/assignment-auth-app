@@ -43,10 +43,8 @@ export default function Home() {
       <header className={styles.header}>
         <div className={styles.logo}>TGP2P</div>
         <nav className={styles.nav}>
-          <a href="#markets" className={styles.navLink}>Markets</a>
+          <Link href="/" className={styles.navLink}>Home</Link>
           <Link href="/p2p" className={styles.navLink}>P2P</Link>
-          <a href="#trade" className={styles.navLink}>Trade</a>
-          <a href="#about" className={styles.navLink}>About</a>
         </nav>
         <div className={styles.auth}>
           {user ? (

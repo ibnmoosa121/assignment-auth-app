@@ -113,6 +113,12 @@
 .main {
   position: relative;
   overflow: hidden;
+  min-height: calc(100vh - 80px - 60px); /* Subtract header and footer height */
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .particles {
@@ -341,6 +347,8 @@
   z-index: 1;
 }
 
+
+
 .orbContainer {
   position: relative;
   width: 400px;
@@ -355,6 +363,7 @@
   height: 180px;
   position: relative;
   animation: float 6s infinite ease-in-out;
+  z-index: 1;
 }
 
 .orbCore {
@@ -399,6 +408,7 @@
   height: 100%;
   top: 0;
   left: 0;
+  z-index: 2;
 }
 
 .floatingCoin {
@@ -413,30 +423,68 @@
   justify-content: center;
   align-items: center;
   box-shadow: 0 0 15px rgba(38, 193, 126, 0.5);
+  transition: all 0.5s ease;
 }
 
 .coin1 {
   top: 10%;
   left: 20%;
-  animation: float 4s infinite ease-in-out;
+  animation: blockchainMove1 15s infinite ease-in-out;
+  z-index: 3;
 }
 
 .coin2 {
   top: 70%;
   left: 15%;
-  animation: float 5s infinite ease-in-out 1s;
+  animation: blockchainMove2 18s infinite ease-in-out 1s;
+  z-index: 3;
 }
 
 .coin3 {
   top: 25%;
   right: 15%;
-  animation: float 6s infinite ease-in-out 0.5s;
+  animation: blockchainMove3 20s infinite ease-in-out 0.5s;
+  z-index: 3;
 }
 
 .coin4 {
   top: 60%;
   right: 20%;
-  animation: float 7s infinite ease-in-out 1.5s;
+  animation: blockchainMove4 17s infinite ease-in-out 1.5s;
+  z-index: 3;
+}
+
+/* Add more coins for a richer blockchain effect */
+.floatingCoins::before,
+.floatingCoins::after {
+  content: '₿';
+  position: absolute;
+  font-size: 1.5rem;
+  color: #26C17E;
+  background: rgba(20, 21, 26, 0.8);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 15px rgba(38, 193, 126, 0.5);
+}
+
+.floatingCoins::before {
+  top: 40%;
+  left: 30%;
+  animation: blockchainMove5 19s infinite ease-in-out 2s;
+  z-index: 3;
+  content: 'Ξ';
+}
+
+.floatingCoins::after {
+  top: 30%;
+  right: 35%;
+  animation: blockchainMove6 16s infinite ease-in-out 3s;
+  z-index: 3;
+  content: 'Ł';
 }
 
 .glowingLines {
@@ -470,6 +518,69 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Blockchain movement animations */
+@keyframes blockchainMove1 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  20% { transform: translate(100px, 50px) scale(1.1); opacity: 0.9; }
+  40% { transform: translate(150px, 120px) scale(0.9); opacity: 0.8; }
+  60% { transform: translate(80px, 180px) scale(1.2); opacity: 0.9; }
+  80% { transform: translate(-50px, 100px) scale(0.8); opacity: 0.7; }
+  100% { transform: translate(0, 0) scale(1); opacity: 1; }
+}
+
+@keyframes blockchainMove2 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  25% { transform: translate(-80px, -120px) scale(0.9); opacity: 0.8; }
+  50% { transform: translate(50px, -180px) scale(1.1); opacity: 0.9; }
+  75% { transform: translate(120px, -60px) scale(0.8); opacity: 0.7; }
+  100% { transform: translate(0, 0) scale(1); opacity: 1; }
+}
+
+@keyframes blockchainMove3 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  20% { transform: translate(-70px, 40px) scale(1.2); opacity: 0.9; }
+  40% { transform: translate(-140px, 100px) scale(0.8); opacity: 0.7; }
+  60% { transform: translate(-180px, 30px) scale(1.1); opacity: 0.8; }
+  80% { transform: translate(-100px, -50px) scale(0.9); opacity: 0.9; }
+  100% { transform: translate(0, 0) scale(1); opacity: 1; }
+}
+
+@keyframes blockchainMove4 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  30% { transform: translate(-50px, -100px) scale(0.9); opacity: 0.8; }
+  60% { transform: translate(-120px, -50px) scale(1.1); opacity: 0.9; }
+  100% { transform: translate(0, 0) scale(1); opacity: 1; }
+}
+
+@keyframes blockchainMove5 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  25% { transform: translate(120px, -80px) scale(0.8); opacity: 0.7; }
+  50% { transform: translate(180px, 30px) scale(1.2); opacity: 0.9; }
+  75% { transform: translate(60px, 100px) scale(0.9); opacity: 0.8; }
+  100% { transform: translate(0, 0) scale(1); opacity: 1; }
+}
+
+@keyframes blockchainMove6 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  20% { transform: translate(-60px, -40px) scale(1.1); opacity: 0.9; }
+  40% { transform: translate(40px, -100px) scale(0.8); opacity: 0.7; }
+  60% { transform: translate(100px, -30px) scale(1.2); opacity: 0.9; }
+  80% { transform: translate(30px, 80px) scale(0.9); opacity: 0.8; }
+  100% { transform: translate(0, 0) scale(1); opacity: 1; }
 }
 
 /* Markets section */
@@ -877,27 +988,107 @@
   opacity: 0.5;
 }
 
-/* P2P Form Styles */
+/* P2P Page Styles */
+.p2pPageLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: calc(100vh - 180px); /* Adjust for header, footer, title and padding */
+  overflow: hidden;
+}
+
+/* Depositor Page Styles */
+.depositorContainer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: calc(100vh - 180px);
+  overflow: hidden;
+}
+
+.tableSection {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.verifiedRow {
+  background-color: rgba(38, 193, 126, 0.1);
+}
+
+.checkboxContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkboxContainer input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #26C17E;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  background-color: rgba(20, 21, 26, 0.5);
+  transition: all 0.2s ease;
+}
+
+.checkboxContainer input[type="checkbox"]:checked {
+  background-color: #26C17E;
+}
+
+.checkboxContainer input[type="checkbox"]:checked::before {
+  content: "✓";
+  position: absolute;
+  color: #14151A;
+  font-size: 14px;
+  font-weight: bold;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .p2pFormContainer {
-  max-width: 600px;
-  margin: 2rem auto;
-  padding: 2rem;
+  width: 100%;
+  padding: 1.25rem;
   background-color: #1E2026;
   border-radius: 10px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(38, 193, 126, 0.2);
+  overflow-y: auto;
+  max-height: 100%;
+}
+
+.accountsTableContainer {
+  width: 100%;
+  padding: 1.25rem;
+  background-color: #1E2026;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  max-height: 100%;
 }
 
 .p2pForm {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.75rem;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
 .formGroup label {
@@ -907,12 +1098,12 @@
 }
 
 .formInput {
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 5px;
   border: 1px solid rgba(38, 193, 126, 0.3);
   background-color: #2B2F36;
   color: #EAECEF;
-  font-size: 1rem;
+  font-size: 0.9rem;
   transition: all 0.3s ease;
 }
 
@@ -946,6 +1137,70 @@
 
 .submitButton:active {
   transform: translateY(0);
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #EAECEF;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(38, 193, 126, 0.3);
+  padding-bottom: 0.5rem;
+}
+
+.sectionSubtitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #EAECEF;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.accountsTable, .totalsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  color: #EAECEF;
+}
+
+.accountsTable th, .accountsTable td,
+.totalsTable th, .totalsTable td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(38, 193, 126, 0.2);
+}
+
+.accountsTable th, .totalsTable th {
+  background-color: rgba(38, 193, 126, 0.1);
+  font-weight: 600;
+  color: #26C17E;
+}
+
+.accountsTable tr:hover, .totalsTable tr:hover {
+  background-color: rgba(38, 193, 126, 0.05);
+}
+
+.amountCell {
+  font-weight: 500;
+  color: #26C17E;
+  text-align: right;
+}
+
+.noDataMessage {
+  color: #848E9C;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.dailyTotalsSection {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(38, 193, 126, 0.3);
 }
 
 .loadingContainer {
@@ -988,54 +1243,69 @@
 }
 
 /* Responsive styles */
-@media (max-width: 1024px) {
-  .heroContent {
-    width: 60%;
+@media (min-width: 1024px) {
+  .p2pPageLayout {
+    flex-direction: row;
+    align-items: stretch;
+    height: calc(100vh - 180px);
   }
   
-  .heroImage {
-    width: 40%;
+  .p2pFormContainer {
+    flex: 0 0 30%;
+    max-width: 30%;
   }
   
-  .title {
-    font-size: 3rem;
+  .accountsTableContainer {
+    flex: 0 0 70%;
+    max-width: 70%;
   }
 }
 
 @media (max-width: 768px) {
   .header {
     padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
   }
   
   .nav {
-    display: none;
-  }
-  
-  .hero {
-    flex-direction: column;
-    padding: 3rem 1rem;
-  }
-  
-  .heroContent {
     width: 100%;
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  
-  .subtitle {
-    max-width: 100%;
-  }
-  
-  .heroImage {
-    width: 100%;
-  }
-  
-  .ctaButtons {
     justify-content: center;
   }
   
+  .auth {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .heroSection {
+    flex-direction: column;
+    padding: 2rem 1rem;
+  }
+  
+  .heroContent, .heroImage {
+    width: 100%;
+  }
+  
+  .heroImage {
+    margin-top: 2rem;
+  }
+  
   .title {
-    font-size: 2.5rem;
+    font-size: 2rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .p2pFormContainer, .accountsTableContainer {
+    padding: 1.5rem;
+  }
+  
+  .accountsTable th, .accountsTable td,
+  .totalsTable th, .totalsTable td {
+    padding: 0.5rem;
   }
   
   .tableHeader, .tableRow {

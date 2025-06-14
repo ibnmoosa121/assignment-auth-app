@@ -5,27 +5,29 @@
     background-color: #14151A; /* Matching the landing page dark background */
     color: #EAECEF; /* Lighter grey for text */
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     padding: 0;
     position: relative;
-    background-image: radial-gradient(circle at 30% 50%, rgba(240, 185, 11, 0.05) 0%, transparent 70%);
+    background-image: radial-gradient(circle at 30% 50%, rgba(38, 193, 126, 0.05) 0%, transparent 70%);
     overflow: hidden;
 }
 
 .container {
     background-color: #2B3139; /* Darker container background */
     border-radius: 12px;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.7), 0 0 15px rgba(240, 185, 11, 0.2);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.7), 0 0 15px rgba(38, 193, 126, 0.2);
     overflow: hidden;
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(240, 185, 11, 0.1);
+    border: 1px solid rgba(38, 193, 126, 0.1);
     display: flex;
     flex-direction: column;
     padding-top: 0;
+    margin-top: 2rem;
 }
 
 .container::before {
@@ -37,7 +39,7 @@
     height: 200%;
     background: conic-gradient(
         transparent,
-        rgba(240, 185, 11, 0.1),
+        rgba(38, 193, 126, 0.1),
         transparent 30%
     );
     animation: rotate 10s linear infinite;
@@ -59,11 +61,11 @@
     width: 100%;
     position: relative;
     overflow: hidden;
-    min-height: 400px; /* Ensure consistent height */
+    min-height: 420px; /* Ensure consistent height */
 }
 
 .form {
-    padding: 30px;
+    padding: 32px 40px;
     position: relative;
     z-index: 1;
     display: flex;
@@ -74,21 +76,22 @@
 
 .formContainer h2 {
     font-family: 'Poppins', sans-serif;
-    color: #F0B90B; /* Binance Yellow */
-    margin-bottom: 30px;
+    color: #26C17E; /* Green to match landing page */
+    margin-bottom: 32px;
     font-size: 2em;
     text-transform: uppercase;
     letter-spacing: 2px;
+    text-align: center;
 }
 
 .inputGroup {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     position: relative;
 }
 
 .inputGroup input {
     width: 100%;
-    padding: 12px 15px;
+    padding: 14px 16px;
     background-color: rgba(20, 21, 26, 0.5); /* Slightly transparent dark background */
     border: 1px solid #474d57; /* Neutral dark border */
     border-radius: 8px;
@@ -105,20 +108,53 @@
 }
 
 .inputGroup input:focus {
-    border-color: #F0B90B; /* Binance Yellow when focused */
+    border-color: #26C17E; /* Green to match landing page */
     outline: none;
-    box-shadow: 0 0 8px rgba(240, 185, 11, 0.5), inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Enhanced glow when focused */
+    box-shadow: 0 0 8px rgba(38, 193, 126, 0.5), inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Enhanced glow when focused */
     background-color: rgba(20, 21, 26, 0.7); /* Slightly darker when focused */
     transform: translateY(-1px);
 }
 
+.roleSelection {
+    margin: 1rem 0;
+}
+
+.roleSelection label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #EAECEF;
+    font-weight: 500;
+}
+
+.roleOptions {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.roleOption {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.roleOption input[type="radio"] {
+    accent-color: #26C17E;
+    width: 1rem;
+    height: 1rem;
+}
+
+.roleOption span {
+    color: #EAECEF;
+}
+
 .btn {
     width: 100%;
-    padding: 12px;
-    background-color: #F0B90B; /* Binance Yellow */
+    padding: 14px;
+    background-color: #26C17E; /* Green to match landing page */
     border: none;
     border-radius: 8px;
-    color: #14151A; /* Very dark text on yellow button for contrast */
+    color: #14151A; /* Very dark text on button for contrast */
     font-size: 1em;
     font-weight: 600;
     cursor: pointer;
@@ -128,7 +164,7 @@
     position: relative;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-top: 5px;
+    margin-top: 10px;
 }
 
 /* Invalid credentials button styles */
@@ -157,9 +193,9 @@
 }
 
 .btn:hover {
-    background-color: #F8D12F; /* Lighter yellow on hover */
+    background-color: #33d695; /* Lighter green on hover */
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 0 15px rgba(240, 185, 11, 0.4);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 0 15px rgba(38, 193, 126, 0.4);
 }
 
 .btn:hover::before {
@@ -176,9 +212,9 @@
     position: relative;
     width: 100%;
     max-width: 300px;
-    height: 40px;
+    height: 46px;
     margin: 20px auto;
-    border-radius: 20px;
+    border-radius: 23px;
     background-color: rgba(20, 21, 26, 0.5);
     border: 1px solid #474d57;
     overflow: hidden;
@@ -207,8 +243,8 @@
     left: 2px;
     width: calc(50% - 4px);
     height: calc(100% - 4px);
-    background-color: #F0B90B;
-    border-radius: 18px;
+    background-color: #26C17E;
+    border-radius: 21px;
     transition: transform 0.3s ease;
     z-index: 1;
 }
@@ -225,7 +261,7 @@
 }
 
 .toggleLink {
-    color: #F0B90B; /* Binance Yellow */
+    color: #26C17E; /* Green to match landing page */
     cursor: pointer;
     font-weight: bold;
     transition: all 0.3s ease;
@@ -240,7 +276,7 @@
     height: 1px;
     bottom: 0;
     left: 0;
-    background-color: #F0B90B;
+    background-color: #26C17E;
     transition: width 0.3s ease;
 }
 
@@ -252,9 +288,9 @@
     width: 100%;
     display: flex;
     justify-content: center;
-    padding: 20px 0 10px;
+    padding: 24px 0 14px;
     background-color: #232730;
-    border-bottom: 1px solid rgba(240, 185, 11, 0.1);
+    border-bottom: 1px solid rgba(38, 193, 126, 0.1);
 }
 
 .toggleButton {
@@ -293,7 +329,7 @@
     left: 3px;
     width: calc(50% - 6px);
     height: calc(100% - 6px);
-    background-color: #F0B90B;
+    background-color: #26C17E;
     border-radius: 22px;
     transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
     z-index: 1;
@@ -312,10 +348,10 @@
     top: 20px;
     left: 20px;
     font-family: 'Poppins', sans-serif;
-    font-size: 1.5em; /* Adjust size as needed */
+    font-size: 1.8em; /* Adjust size as needed */
     font-weight: 700;
-    color: #F0B90B; /* Binance Yellow */
-    text-shadow: 0 0 5px rgba(240, 185, 11, 0.5); /* Subtle glow */
+    color: #26C17E; /* Green to match landing page */
+    text-shadow: 0 0 5px rgba(38, 193, 126, 0.5); /* Subtle glow */
     z-index: 10; /* Ensure it's above other elements if needed, but below splash */
     padding: 10px;
 }
@@ -372,7 +408,7 @@
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: conic-gradient(#F0B90B var(--progress-angle), #2B3139 var(--progress-angle)); /* #2B3139 is the track color */
+    background: conic-gradient(#26C17E var(--progress-angle), #2B3139 var(--progress-angle)); /* #2B3139 is the track color */
     animation: fill-progress 3s linear forwards;
 }
 

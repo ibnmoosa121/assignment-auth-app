@@ -14,8 +14,12 @@ export default function P2PPage() {
     accountNumber: '',
     accountName: '',
     bankName: '',
-    upiId: ''
+    upiId: '',
+    depositorId: ''
   });
+  const [depositors, setDepositors] = useState([]);
+  const [accounts, setAccounts] = useState([]);
+  const [dailyTotals, setDailyTotals] = useState({});
   const router = useRouter();
 
   useEffect(() => {
@@ -29,7 +33,14 @@ export default function P2PPage() {
       if (!sessionUser) {
         router.push('/auth');
       } else {
-        setIsLoading(false);
+        // Check if user is a depositor
+        const userMetadata = sessionUser.user_metadata;
+        if (userMetadata?.role === 'depositor') {
+          // If user is a depositor, redirect to depositor page
+          router.push('/depositor');
+        } else {
+          setIsLoading(false);
+        }
       }
     };
     
@@ -41,15 +52,22 @@ export default function P2PPage() {
         const currentUser = session?.user || null;
         setUser(currentUser);
         
-        // If user signs out, redirect to auth page
         if (!currentUser) {
+          // If user signs out, redirect to auth page
           router.push('/auth');
+        } else {
+          // Check if user is a depositor
+          const userMetadata = currentUser.user_metadata;
+          if (userMetadata?.role === 'depositor') {
+            // If user is a depositor, redirect to depositor page
+            router.push('/depositor');
+          }
         }
       }
     );
     
     return () => {
-      authListener?.subscription.unsubscribe();
+      authListener?.subscription?.unsubscribe();
     };
   }, [router]);
 
@@ -67,20 +85,67 @@ export default function P2PPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically send the form data to your backend
-    alert('Form submitted successfully!');
-    console.log('Form data:', formData);
     
-    // Reset form after submission
+    // Validate depositor selection
+    if (!formData.depositorId) {
+      alert('Please select a depositor for this account.');
+      return;
+    }
+    
+    // Create a new account with current form data
+    const newAccount = {
+      ...formData,
+      amount: parseFloat(formData.amount),
+      date: new Date().toISOString().split('T')[0], // Current date in YYYY-MM-DD format
+      id: Date.now().toString(), // Simple unique ID
+      verified: false // Initial verification status
+    };
+    
+    // Add the new account to the accounts list
+    setAccounts([...accounts, newAccount]);
+    
+    // Reset the form
     setFormData({
       amount: '',
       ifsc: '',
       accountNumber: '',
       accountName: '',
       bankName: '',
-      upiId: ''
+      upiId: '',
+      depositorId: ''
     });
+    
+    // Show success message
+    alert('Account added successfully!');
   };
+
+  // Daily totals are now calculated in the useEffect hook
+
+  useEffect(() => {
+    // Calculate daily totals whenever accounts change
+    const totals = {};
+    accounts.forEach(account => {
+      const date = account.date;
+      if (!totals[date]) {
+        totals[date] = 0;
+      }
+      totals[date] += account.amount;
+    });
+    setDailyTotals(totals);
+  }, [accounts]);
+
+  // Load mock depositors for the demo
+  useEffect(() => {
+    if (!isLoading) {
+      // In a real app, this would fetch from a database
+      const mockDepositors = [
+        { id: 'dep1', name: 'Depositor 1' },
+        { id: 'dep2', name: 'Depositor 2' },
+        { id: 'dep3', name: 'Depositor 3' }
+      ];
+      setDepositors(mockDepositors);
+    }
+  }, [isLoading]);
 
   // Show loading state or redirect if not authenticated
   if (isLoading) {
@@ -105,10 +170,8 @@ export default function P2PPage() {
       <header className={styles.header}>
         <div className={styles.logo}>NovaP2P</div>
         <nav className={styles.nav}>
-          <Link href="/#markets" className={styles.navLink}>Markets</Link>
+          <Link href="/" className={styles.navLink}>Home</Link>
           <Link href="/p2p" className={`${styles.navLink} ${styles.activeLink}`}>P2P</Link>
-          <Link href="/#trade" className={styles.navLink}>Trade</Link>
-          <Link href="/#about" className={styles.navLink}>About</Link>
         </nav>
         <div className={styles.auth}>
           {user && (
@@ -121,97 +184,187 @@ export default function P2PPage() {
       </header>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>P2P Transaction</h1>
+        <h1 className={styles.title} style={{ marginBottom: '0.5rem' }}>P2P Transaction</h1>
         
-        <div className={styles.p2pFormContainer}>
-          <form onSubmit={handleSubmit} className={styles.p2pForm}>
-            <div className={styles.formGroup}>
-              <label htmlFor="amount">Amount (INR)</label>
-              <input
-                type="number"
-                id="amount"
-                name="amount"
-                value={formData.amount}
-                onChange={handleChange}
-                placeholder="Enter amount"
-                required
-                className={styles.formInput}
-              />
-            </div>
+        <div className={styles.p2pPageLayout}>
+          <div className={styles.p2pFormContainer}>
+            <h2 className={styles.sectionTitle}>Add New Account</h2>
+            <form onSubmit={handleSubmit} className={styles.p2pForm}>
+              <div className={styles.formGroup}>
+                <label htmlFor="amount">Amount (INR)</label>
+                <input
+                  type="number"
+                  id="amount"
+                  name="amount"
+                  value={formData.amount}
+                  onChange={handleChange}
+                  placeholder="Enter amount"
+                  required
+                  className={styles.formInput}
+                />
+              </div>
+              
+              <div className={styles.formGroup}>
+                <label htmlFor="bankName">Bank Name</label>
+                <input
+                  type="text"
+                  id="bankName"
+                  name="bankName"
+                  value={formData.bankName}
+                  onChange={handleChange}
+                  placeholder="Enter bank name"
+                  required
+                  className={styles.formInput}
+                />
+              </div>
+              
+              <div className={styles.formGroup}>
+                <label htmlFor="ifsc">IFSC Code</label>
+                <input
+                  type="text"
+                  id="ifsc"
+                  name="ifsc"
+                  value={formData.ifsc}
+                  onChange={handleChange}
+                  placeholder="Enter IFSC code"
+                  required
+                  className={styles.formInput}
+                />
+              </div>
+              
+              <div className={styles.formGroup}>
+                <label htmlFor="accountNumber">Account Number</label>
+                <input
+                  type="text"
+                  id="accountNumber"
+                  name="accountNumber"
+                  value={formData.accountNumber}
+                  onChange={handleChange}
+                  placeholder="Enter account number"
+                  required
+                  className={styles.formInput}
+                />
+              </div>
+              
+              <div className={styles.formGroup}>
+                <label htmlFor="accountName">Account Holder Name</label>
+                <input
+                  type="text"
+                  id="accountName"
+                  name="accountName"
+                  value={formData.accountName}
+                  onChange={handleChange}
+                  placeholder="Enter account holder name"
+                  required
+                  className={styles.formInput}
+                />
+              </div>
+              
+              <div className={styles.formGroup}>
+                <label htmlFor="upiId">UPI ID (Optional)</label>
+                <input
+                  type="text"
+                  id="upiId"
+                  name="upiId"
+                  value={formData.upiId}
+                  onChange={handleChange}
+                  placeholder="Enter UPI ID (optional)"
+                  className={styles.formInput}
+                />
+              </div>
+              
+              <div className={styles.formGroup}>
+                <label htmlFor="depositorId">Assign to Depositor</label>
+                <select
+                  id="depositorId"
+                  name="depositorId"
+                  value={formData.depositorId}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select a depositor</option>
+                  {depositors.map(depositor => (
+                    <option key={depositor.id} value={depositor.id}>
+                      {depositor.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              <button type="submit" className={styles.submitButton}>
+                Add Account
+              </button>
+            </form>
+          </div>
+          
+          <div className={styles.accountsTableContainer}>
+            <h2 className={styles.sectionTitle}>Account Details</h2>
             
-            <div className={styles.formGroup}>
-              <label htmlFor="bankName">Bank Name</label>
-              <input
-                type="text"
-                id="bankName"
-                name="bankName"
-                value={formData.bankName}
-                onChange={handleChange}
-                placeholder="Enter bank name"
-                required
-                className={styles.formInput}
-              />
-            </div>
+            {accounts.length > 0 ? (
+              <div className={styles.tableWrapper}>
+                <table className={styles.accountsTable}>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Account Name</th>
+                      <th>Bank Name</th>
+                      <th>Account Number</th>
+                      <th>IFSC</th>
+                      <th>Amount (INR)</th>
+                      <th>UPI ID</th>
+                      <th>Depositor</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {accounts.map((account) => (
+                      <tr key={account.id} className={account.verified ? styles.verifiedRow : ''}>
+                        <td>{account.date}</td>
+                        <td>{account.accountName}</td>
+                        <td>{account.bankName}</td>
+                        <td>{account.accountNumber}</td>
+                        <td>{account.ifsc}</td>
+                        <td className={styles.amountCell}>{parseFloat(account.amount).toLocaleString('en-IN')}</td>
+                        <td>{account.upiId || '-'}</td>
+                        <td>
+                          {depositors.find(d => d.id === account.depositorId)?.name || '-'}
+                        </td>
+                        <td>
+                          {account.verified ? 'Verified' : 'Pending'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className={styles.noDataMessage}>No accounts added yet.</p>
+            )}
             
-            <div className={styles.formGroup}>
-              <label htmlFor="ifsc">IFSC Code</label>
-              <input
-                type="text"
-                id="ifsc"
-                name="ifsc"
-                value={formData.ifsc}
-                onChange={handleChange}
-                placeholder="Enter IFSC code"
-                required
-                className={styles.formInput}
-              />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label htmlFor="accountNumber">Account Number</label>
-              <input
-                type="text"
-                id="accountNumber"
-                name="accountNumber"
-                value={formData.accountNumber}
-                onChange={handleChange}
-                placeholder="Enter account number"
-                required
-                className={styles.formInput}
-              />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label htmlFor="accountName">Account Holder Name</label>
-              <input
-                type="text"
-                id="accountName"
-                name="accountName"
-                value={formData.accountName}
-                onChange={handleChange}
-                placeholder="Enter account holder name"
-                required
-                className={styles.formInput}
-              />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label htmlFor="upiId">UPI ID (Optional)</label>
-              <input
-                type="text"
-                id="upiId"
-                name="upiId"
-                value={formData.upiId}
-                onChange={handleChange}
-                placeholder="Enter UPI ID (optional)"
-                className={styles.formInput}
-              />
-            </div>
-            
-            <button type="submit" className={styles.submitButton}>
-              Submit Transaction
-            </button>
-          </form>
+            {Object.keys(dailyTotals).length > 0 && (
+              <div className={styles.dailyTotalsSection}>
+                <h3 className={styles.sectionSubtitle}>Daily Totals</h3>
+                <div className={styles.tableWrapper}>
+                  <table className={styles.totalsTable}>
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Total Amount (INR)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.entries(dailyTotals).map(([date, total]) => (
+                        <tr key={date}>
+                          <td>{date}</td>
+                          <td className={styles.amountCell}>{total.toLocaleString('en-IN')}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </main>
 

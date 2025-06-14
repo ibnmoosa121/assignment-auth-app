@@ -88,6 +88,7 @@ export default function AuthPage() {
         const email = e.target.signUpEmail.value;
         const password = e.target.signUpPassword.value;
         const confirmPassword = e.target.confirmPassword.value;
+        const userRole = e.target.userRole.value;
 
         if (password !== confirmPassword) {
             alert('Passwords do not match.');
@@ -99,7 +100,8 @@ export default function AuthPage() {
             password,
             options: {
                 data: {
-                    username: username
+                    username: username,
+                    role: userRole
                 }
             }
         })
@@ -167,6 +169,19 @@ export default function AuthPage() {
                                     </div>
                                     <div className={styles.inputGroup}>
                                         <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required />
+                                    </div>
+                                    <div className={styles.roleSelection}>
+                                        <label>Select Role:</label>
+                                        <div className={styles.roleOptions}>
+                                            <label className={styles.roleOption}>
+                                                <input type="radio" name="userRole" value="orderGiver" required defaultChecked />
+                                                <span>Order Giver</span>
+                                            </label>
+                                            <label className={styles.roleOption}>
+                                                <input type="radio" name="userRole" value="depositor" required />
+                                                <span>Depositor</span>
+                                            </label>
+                                        </div>
                                     </div>
                                     <button type="submit" className={styles.btn}>Sign Up</button>
                                 </form>
