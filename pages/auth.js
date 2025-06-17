@@ -31,11 +31,22 @@ export default function AuthPage() {
                 
                 if (isConfirmation) {
                     // Let Supabase handle the auth session first
-                    await supabase.auth.getSession();
+                    const { data } = await supabase.auth.getSession();
+                    const sessionUser = data.session?.user;
                     
-                    // Switch to sign in form and show message
-                    setShowSignUp(false);
-                    setMessage('Email verified! Please sign in with your credentials.');
+                    if (sessionUser) {
+                        // User is already signed in after confirmation
+                        setMessage('Email verified! Redirecting to P2P page...');
+                        
+                        // Redirect directly to P2P page
+                        setTimeout(() => {
+                            window.location.href = '/p2p';
+                        }, 1500);
+                    } else {
+                        // Switch to sign in form and show message
+                        setShowSignUp(false);
+                        setMessage('Email verified! Please sign in with your credentials.');
+                    }
                     
                     // Clear the hash to avoid showing the message again on refresh
                     if (typeof window !== 'undefined') {

@@ -138,8 +138,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6rem 2rem;
-  min-height: 90vh;
+  padding: 4rem 2rem;
+  min-height: calc(100vh - 80px); /* Subtract header height */
   background: linear-gradient(135deg, rgba(16, 17, 22, 0.95) 0%, rgba(24, 26, 32, 0.95) 100%);
   position: relative;
   overflow: hidden;
@@ -413,17 +413,16 @@
 
 .floatingCoin {
   position: absolute;
-  font-size: 1.8rem;
+  font-size: 2.5rem;
   color: #26C17E;
-  background: rgba(20, 21, 26, 0.8);
   width: 50px;
   height: 50px;
-  border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 0 15px rgba(38, 193, 126, 0.5);
+  text-shadow: 0 0 15px rgba(38, 193, 126, 0.8);
   transition: all 0.5s ease;
+  background: transparent;
 }
 
 .coin1 {
@@ -459,16 +458,15 @@
 .floatingCoins::after {
   content: '₿';
   position: absolute;
-  font-size: 1.5rem;
+  font-size: 2.2rem;
   color: #26C17E;
-  background: rgba(20, 21, 26, 0.8);
   width: 40px;
   height: 40px;
-  border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 0 15px rgba(38, 193, 126, 0.5);
+  text-shadow: 0 0 15px rgba(38, 193, 126, 0.8);
+  background: transparent;
 }
 
 .floatingCoins::before {

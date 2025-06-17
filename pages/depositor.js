@@ -30,8 +30,7 @@ export default function DepositorPage() {
           router.push('/p2p');
         } else {
           setIsLoading(false);
-          // Load accounts assigned to this depositor
-          loadDepositorAccounts();
+          // Accounts will be loaded via useEffect
         }
       }
     };
@@ -57,64 +56,151 @@ export default function DepositorPage() {
   }, [router]);
 
   // Load accounts assigned to this depositor
-  const loadDepositorAccounts = () => {
-    // In a real app, this would fetch from a database
-    // For now, we'll use mock data
-    const mockAccounts = [
-      {
-        id: '1',
-        amount: 50000,
-        ifsc: 'SBIN0001234',
-        accountNumber: '1234567890',
-        accountName: 'John Doe',
-        bankName: 'State Bank of India',
-        upiId: 'johndoe@sbi',
-        date: new Date().toISOString().split('T')[0],
-        verified: false
-      },
-      {
-        id: '2',
-        amount: 75000,
-        ifsc: 'HDFC0002345',
-        accountNumber: '2345678901',
-        accountName: 'Jane Smith',
-        bankName: 'HDFC Bank',
-        upiId: 'janesmith@hdfc',
-        date: new Date().toISOString().split('T')[0],
-        verified: false
-      },
-      {
-        id: '3',
-        amount: 100000,
-        ifsc: 'ICIC0003456',
-        accountNumber: '3456789012',
-        accountName: 'Robert Johnson',
-        bankName: 'ICICI Bank',
-        upiId: 'robert@icici',
-        date: new Date(Date.now() - 86400000).toISOString().split('T')[0], // Yesterday
-        verified: true
+  useEffect(() => {
+    const loadDepositorAccounts = async () => {
+      if (!user || isLoading) return;
+      
+      try {
+        await ensureAccountsTableExists();
+        
+        // Fetch accounts assigned to this depositor
+        const { data: accountsData, error } = await supabase
+          .from('accounts')
+          .select('*')
+          .eq('depositorId', user.id);
+        
+        if (error) {
+          console.error('Error fetching accounts:', error);
+          return;
+        }
+        
+        setAccounts(accountsData || []);
+        
+        // Initialize verification status from fetched data
+        const verificationStatus = {};
+        accountsData?.forEach(account => {
+          verificationStatus[account.id] = account.verified || false;
+        });
+        setVerifiedAccounts(verificationStatus);
+      } catch (error) {
+        console.error('Error in loadDepositorAccounts:', error);
       }
-    ];
+    };
     
-    setAccounts(mockAccounts);
+    loadDepositorAccounts();
     
-    // Initialize verification status
-    const initialVerificationStatus = {};
-    mockAccounts.forEach(account => {
-      initialVerificationStatus[account.id] = account.verified;
-    });
-    setVerifiedAccounts(initialVerificationStatus);
+    // Set up real-time subscription to accounts table
+    const subscription = supabase
+      .channel('accounts-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'accounts', filter: `depositorId=eq.${user?.id}` }, 
+        payload => {
+          console.log('Real-time update received:', payload);
+          
+          // Reload accounts when there's any change
+          loadDepositorAccounts();
+        }
+      )
+      .subscribe();
+    
+    // Clean up subscription when component unmounts
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user, isLoading]);
+  
+  // Ensure the accounts table exists in Supabase
+  const ensureAccountsTableExists = async () => {
+    try {
+      // Check if the table exists by attempting to query it
+      const { error } = await supabase
+        .from('accounts')
+        .select('count')
+        .limit(1);
+      
+      // If there's no error, the table exists
+      if (!error) return;
+      
+      // If there's an error and it's not a "relation does not exist" error,
+      // we can't do much here in the client
+      console.log('Note: You may need to create the accounts table in Supabase');
+      
+      // For demo purposes, we'll populate with mock data if no accounts exist
+      const mockAccounts = [
+        {
+          id: '1',
+          amount: 50000,
+          ifsc: 'SBIN0001234',
+          accountNumber: '1234567890',
+          accountName: 'John Doe',
+          bankName: 'State Bank of India',
+          upiId: 'johndoe@sbi',
+          date: new Date().toISOString().split('T')[0],
+          depositorId: user?.id,
+          verified: false
+        },
+        {
+          id: '2',
+          amount: 75000,
+          ifsc: 'HDFC0002345',
+          accountNumber: '2345678901',
+          accountName: 'Jane Smith',
+          bankName: 'HDFC Bank',
+          upiId: 'janesmith@hdfc',
+          date: new Date().toISOString().split('T')[0],
+          depositorId: user?.id,
+          verified: false
+        }
+      ];
+      
+      setAccounts(mockAccounts);
+    } catch (error) {
+      console.error('Error checking accounts table:', error);
+    }
   };
 
   // Handle verification toggle
-  const handleVerificationToggle = (accountId) => {
-    setVerifiedAccounts(prev => ({
-      ...prev,
-      [accountId]: !prev[accountId]
-    }));
-    
-    // In a real app, this would update the database
-    alert(`Deposit status updated for account ID: ${accountId}`);
+  const handleVerificationToggle = async (accountId) => {
+    try {
+      // Get the current verification status
+      const currentStatus = verifiedAccounts[accountId] || false;
+      const newStatus = !currentStatus;
+      
+      // Update local state first for immediate UI feedback
+      const newVerifiedAccounts = { ...verifiedAccounts };
+      newVerifiedAccounts[accountId] = newStatus;
+      setVerifiedAccounts(newVerifiedAccounts);
+      
+      // Update the account in Supabase
+      const { error } = await supabase
+        .from('accounts')
+        .update({ verified: newStatus })
+        .eq('id', accountId);
+      
+      if (error) {
+        console.error('Error updating verification status:', error);
+        // Revert the local state if the update failed
+        newVerifiedAccounts[accountId] = currentStatus;
+        setVerifiedAccounts(newVerifiedAccounts);
+        alert('Failed to update verification status. Please try again.');
+        return;
+      }
+      
+      // Show confirmation alert
+      const status = newStatus ? 'verified' : 'unverified';
+      alert(`Account ${accountId} marked as ${status}`);
+      
+      // Update the accounts list to reflect the new status
+      setAccounts(accounts.map(account => {
+        if (account.id === accountId) {
+          return { ...account, verified: newStatus };
+        }
+        return account;
+      }));
+    } catch (error) {
+      console.error('Error in handleVerificationToggle:', error);
+      alert('An error occurred. Please try again.');
+    }
   };
 
   // Format currency in Indian format

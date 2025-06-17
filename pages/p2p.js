@@ -35,6 +35,7 @@ export default function P2PPage() {
       } else {
         // Check if user is a depositor
         const userMetadata = sessionUser.user_metadata;
+        
         if (userMetadata?.role === 'depositor') {
           // If user is a depositor, redirect to depositor page
           router.push('/depositor');
@@ -92,60 +93,186 @@ export default function P2PPage() {
       return;
     }
     
-    // Create a new account with current form data
-    const newAccount = {
-      ...formData,
-      amount: parseFloat(formData.amount),
-      date: new Date().toISOString().split('T')[0], // Current date in YYYY-MM-DD format
-      id: Date.now().toString(), // Simple unique ID
-      verified: false // Initial verification status
-    };
-    
-    // Add the new account to the accounts list
-    setAccounts([...accounts, newAccount]);
-    
-    // Reset the form
-    setFormData({
-      amount: '',
-      ifsc: '',
-      accountNumber: '',
-      accountName: '',
-      bankName: '',
-      upiId: '',
-      depositorId: ''
-    });
-    
-    // Show success message
-    alert('Account added successfully!');
+    try {
+      // Create a new account with current form data
+      const newAccount = {
+        ...formData,
+        amount: parseFloat(formData.amount),
+        date: new Date().toISOString().split('T')[0], // Current date in YYYY-MM-DD format
+        verified: false, // Initial verification status
+        created_by: user?.id // Track who created this account
+      };
+      
+      // Ensure the accounts table exists
+      await ensureAccountsTableExists();
+      
+      // Save the account to Supabase
+      const { data, error } = await supabase
+        .from('accounts')
+        .insert([newAccount])
+        .select();
+      
+      if (error) {
+        console.error('Error adding account:', error);
+        alert(`Failed to add account: ${error.message}`);
+        return;
+      }
+      
+      // Add the new account to the local accounts list
+      const savedAccount = data[0];
+      setAccounts([...accounts, savedAccount]);
+      
+      // Reset the form
+      setFormData({
+        amount: '',
+        ifsc: '',
+        accountNumber: '',
+        accountName: '',
+        bankName: '',
+        upiId: '',
+        depositorId: ''
+      });
+      
+      // Show success message
+      alert('Account added successfully!');
+    } catch (error) {
+      console.error('Error in handleSubmit:', error);
+      alert('An error occurred while adding the account. Please try again.');
+    }
   };
 
-  // Daily totals are now calculated in the useEffect hook
-
-  useEffect(() => {
-    // Calculate daily totals whenever accounts change
-    const totals = {};
-    accounts.forEach(account => {
-      const date = account.date;
-      if (!totals[date]) {
-        totals[date] = 0;
-      }
-      totals[date] += account.amount;
-    });
-    setDailyTotals(totals);
-  }, [accounts]);
-
-  // Load mock depositors for the demo
-  useEffect(() => {
-    if (!isLoading) {
-      // In a real app, this would fetch from a database
-      const mockDepositors = [
-        { id: 'dep1', name: 'Depositor 1' },
-        { id: 'dep2', name: 'Depositor 2' },
-        { id: 'dep3', name: 'Depositor 3' }
-      ];
-      setDepositors(mockDepositors);
+  // Ensure the accounts table exists in Supabase
+  const ensureAccountsTableExists = async () => {
+    try {
+      // Check if the table exists by attempting to query it
+      const { error } = await supabase
+        .from('accounts')
+        .select('count')
+        .limit(1);
+      
+      // If there's no error, the table exists
+      if (!error) return;
+      
+      // If there's an error and it's not a "relation does not exist" error,
+      // we can't do much here in the client
+      console.log('Note: You may need to create the accounts table in Supabase');
+    } catch (error) {
+      console.error('Error checking accounts table:', error);
     }
-  }, [isLoading]);
+  };
+
+  // Load accounts and calculate daily totals
+  useEffect(() => {
+    const loadAccounts = async () => {
+      if (isLoading || !user) return;
+      
+      try {
+        await ensureAccountsTableExists();
+        
+        // Fetch all accounts (not just created by this user)
+        // This allows Order Givers to see all accounts in the system
+        const { data: accountsData, error } = await supabase
+          .from('accounts')
+          .select('*');
+        
+        if (error) {
+          console.error('Error fetching accounts:', error);
+          return;
+        }
+        
+        setAccounts(accountsData || []);
+        
+        // Calculate daily totals
+        const totals = {};
+        accountsData?.forEach(account => {
+          const date = account.date;
+          if (!totals[date]) {
+            totals[date] = 0;
+          }
+          totals[date] += account.amount;
+        });
+        setDailyTotals(totals);
+      } catch (error) {
+        console.error('Error loading accounts:', error);
+      }
+    };
+    
+    loadAccounts();
+    
+    // Set up real-time subscription to accounts table
+    const subscription = supabase
+      .channel('accounts-channel')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'accounts' }, 
+        payload => {
+          console.log('Real-time update received:', payload);
+          
+          // Reload all accounts when there's any change
+          loadAccounts();
+        }
+      )
+      .subscribe();
+    
+    // Clean up subscription when component unmounts
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [isLoading, user]);
+
+  // Load depositors from Supabase
+  useEffect(() => {
+    const loadDepositors = async () => {
+      if (isLoading || !user) return;
+      
+      try {
+        // Fetch users with 'depositor' role
+        const { data: depositorUsers, error } = await supabase
+          .from('users')
+          .select('id, username, user_metadata')
+          .eq('user_metadata->>role', 'depositor');
+        
+        if (error) {
+          console.error('Error fetching depositors:', error);
+          // Fall back to mock data if there's an error
+          const mockDepositors = [
+            { id: 'dep1', name: 'Depositor 1' },
+            { id: 'dep2', name: 'Depositor 2' },
+            { id: 'dep3', name: 'Depositor 3' }
+          ];
+          setDepositors(mockDepositors);
+          return;
+        }
+        
+        // If no depositors found or error with the query, use mock data
+        if (!depositorUsers || depositorUsers.length === 0) {
+          const mockDepositors = [
+            { id: 'dep1', name: 'Depositor 1' },
+            { id: 'dep2', name: 'Depositor 2' },
+            { id: 'dep3', name: 'Depositor 3' }
+          ];
+          setDepositors(mockDepositors);
+        } else {
+          // Format the depositors for the dropdown
+          const formattedDepositors = depositorUsers.map(user => ({
+            id: user.id,
+            name: user.username || user.user_metadata?.username || `Depositor ${user.id.substring(0, 4)}`
+          }));
+          setDepositors(formattedDepositors);
+        }
+      } catch (error) {
+        console.error('Error loading depositors:', error);
+        // Fall back to mock data
+        const mockDepositors = [
+          { id: 'dep1', name: 'Depositor 1' },
+          { id: 'dep2', name: 'Depositor 2' },
+          { id: 'dep3', name: 'Depositor 3' }
+        ];
+        setDepositors(mockDepositors);
+      }
+    };
+    
+    loadDepositors();
+  }, [isLoading, user]);
 
   // Show loading state or redirect if not authenticated
   if (isLoading) {
