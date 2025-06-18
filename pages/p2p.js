@@ -104,7 +104,16 @@ export default function P2PPage() {
       };
       
       // Ensure the accounts table exists
-      await ensureAccountsTableExists();
+      const tableExists = await ensureAccountsTableExists();
+      
+      if (!tableExists) {
+        alert('The accounts table does not exist in your Supabase database. Please create it first.');
+        console.log('Please create the accounts table in your Supabase dashboard with the columns shown in the console.');
+        return;
+      }
+      
+      // Log the account being created for debugging
+      console.log('Creating account:', newAccount);
       
       // Save the account to Supabase
       const { data, error } = await supabase
@@ -114,7 +123,7 @@ export default function P2PPage() {
       
       if (error) {
         console.error('Error adding account:', error);
-        alert(`Failed to add account: ${error.message}`);
+        alert(`Failed to add account: ${error.message || JSON.stringify(error)}`);
         return;
       }
       
@@ -151,13 +160,29 @@ export default function P2PPage() {
         .limit(1);
       
       // If there's no error, the table exists
-      if (!error) return;
+      if (!error) {
+        console.log('Accounts table exists in Supabase');
+        return true;
+      }
       
-      // If there's an error and it's not a "relation does not exist" error,
-      // we can't do much here in the client
-      console.log('Note: You may need to create the accounts table in Supabase');
+      // If there's an error, log detailed information
+      console.error('Error checking accounts table:', error);
+      console.log('You need to create the accounts table in Supabase with these columns:');
+      console.log('- id: uuid (primary key, default: uuid_generate_v4())');
+      console.log('- amount: float8 (not null)');
+      console.log('- ifsc: text (not null)');
+      console.log('- accountNumber: text (not null)');
+      console.log('- accountName: text (not null)');
+      console.log('- bankName: text (not null)');
+      console.log('- upiId: text');
+      console.log('- date: date (not null)');
+      console.log('- depositorId: uuid (not null)');
+      console.log('- verified: boolean (default: false)');
+      console.log('- created_by: uuid');
+      return false;
     } catch (error) {
       console.error('Error checking accounts table:', error);
+      return false;
     }
   };
 
