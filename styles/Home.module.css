@@ -998,14 +998,7 @@
   overflow: hidden;
 }
 
-/* Depositor Page Styles */
-.depositorContainer {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  height: calc(100vh - 180px);
-  overflow: hidden;
-}
+
 
 .tableSection {
   width: 100%;

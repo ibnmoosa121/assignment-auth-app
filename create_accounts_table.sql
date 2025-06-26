@@ -14,7 +14,6 @@ CREATE TABLE accounts (
   bank_name TEXT NOT NULL,
   upi_id TEXT,
   date DATE NOT NULL,
-  depositor_id TEXT NOT NULL,
   verified BOOLEAN DEFAULT FALSE,
   created_by TEXT
 );

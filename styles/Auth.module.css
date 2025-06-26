@@ -253,6 +253,8 @@
     transform: translateX(calc(100% + 4px));
 }
 
+
+
 .toggleText {
     text-align: center;
     margin-top: 15px;

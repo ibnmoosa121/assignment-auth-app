@@ -81,7 +81,8 @@ export default function AuthPage() {
                     console.log('Sign in successful:', data);
                     setMessage('Sign in successful! Redirecting to home page...');
                     setTimeout(() => {
-                        window.location.href = '/';
+                        // Use replace instead of href to prevent issues with browser history
+                        window.location.replace('/');
                     }, 1500);
                 }
             })
@@ -137,7 +138,7 @@ export default function AuthPage() {
     return (
         <>
             <Head>
-                <title>Authentication - NovaP2P</title>
+                <title>Authentication</title>
             </Head>
             {isLoading ? (
                 <div className={`${styles.splashScreen} ${isLoading ? '' : styles.splashScreenHidden}`}>
@@ -145,8 +146,7 @@ export default function AuthPage() {
                 </div>
             ) : (
                 <div className={styles.body}>
-                    {/* Branding Logo */}
-                    <div className={styles.brandingLogo}>NovaP2P</div>
+                    {/* Branding Logo removed */}
 
                     <div className={styles.container}>
                         <div className={styles.toggleContainer}>
@@ -181,19 +181,7 @@ export default function AuthPage() {
                                     <div className={styles.inputGroup}>
                                         <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required />
                                     </div>
-                                    <div className={styles.roleSelection}>
-                                        <label>Select Role:</label>
-                                        <div className={styles.roleOptions}>
-                                            <label className={styles.roleOption}>
-                                                <input type="radio" name="userRole" value="orderGiver" required defaultChecked />
-                                                <span>Order Giver</span>
-                                            </label>
-                                            <label className={styles.roleOption}>
-                                                <input type="radio" name="userRole" value="depositor" required />
-                                                <span>Depositor</span>
-                                            </label>
-                                        </div>
-                                    </div>
+                                    <input type="hidden" name="userRole" value="orderGiver" />
                                     <button type="submit" className={styles.btn}>Sign Up</button>
                                 </form>
                             ) : (

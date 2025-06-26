@@ -15,71 +15,164 @@ export default function P2PPage() {
     account_name: '',    // Changed from accountName to account_name
     bank_name: '',       // Changed from bankName to bank_name
     upi_id: '',          // Changed from upiId to upi_id
-    depositor_id: ''     // Changed from depositorId to depositor_id
+    status: 'pending'    // Default status is pending
   });
-  const [userInfo, setUserInfo] = useState({
-    id: '',
-    email: '',
-    role: ''
-  });
-  const [depositors, setDepositors] = useState([]);
+  // User info is managed through the user state instead
+  // const [userInfo, setUserInfo] = useState({
+  //   id: '',
+  //   email: '',
+  //   role: ''
+  // });
   const [accounts, setAccounts] = useState([]);
-  const [dailyTotals, setDailyTotals] = useState({});
   const router = useRouter();
 
-  useEffect(() => {
-    // Check if user is already signed in
-    const checkUser = async () => {
-      const { data } = await supabase.auth.getSession();
-      const sessionUser = data.session?.user || null;
-      setUser(sessionUser);
+  // Function to reset form fields
+  const resetForm = () => {
+    setFormData({
+      amount: '',
+      ifsc: '',
+      account_number: '',
+      account_name: '',
+      bank_name: '',
+      upi_id: '',
+      status: 'pending' // Keep status field for UI consistency, will be mapped to verified=0
+    });
+  };
+
+  // Function to check if the accounts table exists and has the correct structure
+  const checkDatabaseStructure = async () => {
+    try {
+      // First, test basic Supabase connection
+      console.log('Testing Supabase connection...');
       
-      // If no user is logged in, redirect to auth page
-      if (!sessionUser) {
-        router.push('/auth');
+      // Try to get the current user to test authentication
+      const { /* data: authData, */ error: authError } = await supabase.auth.getUser();
+      if (authError) {
+        console.error('Auth error:', authError);
+        return false;
       } else {
-        // Check if user is a depositor
-        const userMetadata = sessionUser.user_metadata;
-        
-        if (userMetadata?.role === 'depositor') {
-          // If user is a depositor, redirect to depositor page
-          router.push('/depositor');
-        } else {
-          setIsLoading(false);
-        }
+        console.log('Auth check successful');
       }
+      
+      try {
+        // Try to access the accounts table
+        const result = await supabase
+          .from('accounts')
+          .select('id')
+          .limit(1);
+        
+        const { error } = result;
+        if (error) {
+          console.error('Error accessing accounts table:', error);
+          return false;
+        }
+        
+        console.log('Successfully accessed accounts table');
+        return true;
+      } catch (tableError) {
+        console.error('Error with accounts table:', tableError);
+        return false;
+      }
+    } catch (error) {
+      console.error('Error checking database structure:', error);
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUser(user);
+        fetchUserInfo(user.id);
+        
+        // Check database structure before fetching accounts
+        const dbStructureOk = await checkDatabaseStructure();
+        if (dbStructureOk) {
+          fetchAccounts(user.id);
+        } else {
+          console.error('Database structure check failed. The accounts table may not exist or has incorrect structure.');
+          alert('There was an issue connecting to the database. Please check the console for details.');
+        }
+      } else {
+        router.push('/auth');
+      }
+      setIsLoading(false);
     };
-    
-    checkUser();
-    
-    // Listen for auth changes
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        const currentUser = session?.user || null;
-        setUser(currentUser);
-        
-        if (!currentUser) {
-          // If user signs out, redirect to auth page
-          router.push('/auth');
-        } else {
-          // Check if user is a depositor
-          const userMetadata = currentUser.user_metadata;
-          if (userMetadata?.role === 'depositor') {
-            // If user is a depositor, redirect to depositor page
-            router.push('/depositor');
-          }
-        }
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        router.push('/auth');
       }
-    );
-    
+    });
+
+    checkUser();
+
     return () => {
-      authListener?.subscription?.unsubscribe();
+      subscription.unsubscribe();
     };
   }, [router]);
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
+  const fetchUserInfo = async () => {
+    try {
+      // Get user info directly from auth.users via getUser() since the users table doesn't exist
+      const { data: { user }, error } = await supabase.auth.getUser();
+
+      if (error) throw error;
+      if (user) {
+        setUserInfo({
+          id: user.id,
+          email: user.email,
+          role: user.app_metadata?.role || 'user' // Default to 'user' if role is not defined
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+    }
   };
+
+  const fetchAccounts = async (userId) => {
+    try {
+      console.log('Fetching accounts for user ID:', userId);
+      
+      // Use 'created_by' column based on the schema check
+      const { data, error } = await supabase
+        .from('accounts')
+        .select('*')
+        .eq('created_by', userId) // Changed to created_by based on actual schema
+        .order('date', { ascending: false }); // Changed from created_at to date based on actual schema
+
+      if (error) {
+        console.error('Supabase error when fetching accounts:', error);
+        console.log('Trying to get all accounts to check schema...');
+        const { data: allData, error: allError } = await supabase
+          .from('accounts')
+          .select('*')
+          .limit(1);
+          
+        if (allError) {
+          console.error('Error getting accounts schema:', allError);
+          throw allError;
+        } else if (allData && allData.length > 0) {
+          console.log('Account schema sample:', Object.keys(allData[0]));
+        }
+        
+        throw error;
+      }
+      
+      console.log('Accounts retrieved:', data);
+      
+      if (data) {
+        setAccounts(data);
+      } else {
+        console.log('No accounts data returned from Supabase');
+      }
+    } catch (error) {
+      console.error('Error fetching accounts:', error);
+    }
+  };
+
+  // Daily totals functionality removed
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -91,265 +184,113 @@ export default function P2PPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validate depositor selection
-    if (!formData.depositor_id) {
-      alert('Please select a depositor for this account.');
-      return;
-    }
-    
     try {
-      // Create a new account with current form data
-      const newAccount = {
-        ...formData,
-        amount: parseFloat(formData.amount),
-        date: new Date().toISOString().split('T')[0], // Current date in YYYY-MM-DD format
-        verified: false, // Initial verification status
-        created_by: user?.id // Track who created this account
+      console.log('Submitting form data:', formData);
+      console.log('User ID:', user?.id);
+      
+      // Create account data object with fields that match the database schema
+      const accountData = {
+        created_by: user.id, // Changed to created_by based on actual schema
+        amount: formData.amount,
+        ifsc: formData.ifsc,
+        account_number: formData.account_number,
+        account_name: formData.account_name,
+        bank_name: formData.bank_name,
+        upi_id: formData.upi_id,
+        // Store status in the 'verified' field since there's no 'status' column
+        // Use 0 for pending, 1 for completed
+        verified: formData.status === 'completed' ? 1 : 0,
+        // Add date field to satisfy the not-null constraint
+        date: new Date().toISOString(),
+        // Add depositor_id field to satisfy the not-null constraint
+        depositor_id: user.id  // Using the current user's ID as the depositor_id
       };
       
-      // Ensure the accounts table exists
-      const tableExists = await ensureAccountsTableExists();
+      console.log('Account data being inserted:', accountData);
       
-      if (!tableExists) {
-        alert('The accounts table does not exist in your Supabase database. Please create it first.');
-        console.log('Please create the accounts table in your Supabase dashboard with the columns shown in the console.');
-        return;
-      }
+      console.log('Account data to insert:', accountData);
       
-      // Log the account being created for debugging
-      console.log('Creating account:', newAccount);
-      
-      // Save the account to Supabase
       const { data, error } = await supabase
         .from('accounts')
-        .insert([newAccount])
-        .select();
-      
+        .insert([accountData]);
+
       if (error) {
-        console.error('Error adding account:', error);
-        alert(`Failed to add account: ${error.message || JSON.stringify(error)}`);
-        return;
+        console.error('Supabase error:', error);
+        throw error;
       }
       
-      // Add the new account to the local accounts list
-      const savedAccount = data[0];
-      setAccounts([...accounts, savedAccount]);
+      console.log('Account added successfully:', data);
       
-      // Reset the form
-      setFormData({
-        amount: '',
-        ifsc: '',
-        account_number: '',
-        account_name: '',
-        bank_name: '',
-        upi_id: '',
-        depositor_id: ''
-      });
-      
-      // Show success message
-      alert('Account added successfully!');
+      // Reset form and fetch updated accounts
+      resetForm();
+      fetchAccounts(user.id);
     } catch (error) {
-      console.error('Error in handleSubmit:', error);
-      alert('An error occurred while adding the account. Please try again.');
+      console.error('Error adding account:', error);
+      alert('Failed to add account. Please check console for details.');
     }
   };
 
-  // Ensure the accounts table exists in Supabase
-  const ensureAccountsTableExists = async () => {
+  const handleDeleteAccount = async (accountId) => {
+    if (window.confirm('Are you sure you want to delete this account?')) {
+      try {
+        const { error } = await supabase
+          .from('accounts')
+          .delete()
+          .eq('id', accountId);
+
+        if (error) throw error;
+        
+        // Refresh accounts list after deletion
+        fetchAccounts(user.id);
+      } catch (error) {
+        console.error('Error deleting account:', error);
+      }
+    }
+  };
+
+  const handleUpdateStatus = async (accountId, newStatus) => {
     try {
-      // Check if the table exists by attempting to query it
+      console.log(`Updating account ${accountId} to status: ${newStatus}`);
+      
+      // Convert status string to verified value (0 for pending, 1 for completed)
+      const verifiedValue = newStatus === 'completed' ? 1 : 0;
+      
+      // Update the local state immediately for better UX
+      setAccounts(prevAccounts => 
+        prevAccounts.map(account => 
+          account.id === accountId ? { ...account, verified: verifiedValue } : account
+        )
+      );
+      
+      // Update the account status in Supabase
       const { error } = await supabase
         .from('accounts')
-        .select('count')
-        .limit(1);
-      
-      // If there's no error, the table exists
-      if (!error) {
-        console.log('Accounts table exists in Supabase');
-        return true;
+        .update({ verified: verifiedValue })
+        .eq('id', accountId);
+
+      if (error) {
+        console.error('Supabase error when updating status:', error);
+        alert('Failed to update status. Please try again.');
+        // Revert the local state if there's an error
+        fetchAccounts(user.id);
+        throw error;
       }
       
-      // If there's an error, log detailed information
-      console.error('Error checking accounts table:', error);
-      console.log('You need to create the accounts table in Supabase with these columns:');
-      console.log('- id: uuid (primary key, default: uuid_generate_v4())');
-      console.log('- amount: float8 (not null)');
-      console.log('- ifsc: text (not null)');
-      console.log('- account_number: text (not null)');
-      console.log('- account_name: text (not null)');
-      console.log('- bank_name: text (not null)');
-      console.log('- upi_id: text');
-      console.log('- date: date (not null)');
-      console.log('- depositor_id: uuid (not null)');
-      console.log('- verified: boolean (default: false)');
-      console.log('- created_by: uuid');
-      return false;
+      console.log(`Successfully updated account ${accountId} status to ${newStatus}`);
     } catch (error) {
-      console.error('Error checking accounts table:', error);
-      return false;
+      console.error('Error updating account status:', error);
     }
   };
 
-  // Load accounts and calculate daily totals
-  useEffect(() => {
-    const loadAccounts = async () => {
-      if (isLoading || !user) return;
-      
-      try {
-        await ensureAccountsTableExists();
-        
-        // Fetch all accounts (not just created by this user)
-        // This allows Order Givers to see all accounts in the system
-        const { data: accountsData, error } = await supabase
-          .from('accounts')
-          .select('*');
-        
-        if (error) {
-          console.error('Error fetching accounts:', error);
-          return;
-        }
-        
-        setAccounts(accountsData || []);
-        
-        // Calculate daily totals
-        const totals = {};
-        accountsData?.forEach(account => {
-          const date = account.date;
-          if (!totals[date]) {
-            totals[date] = 0;
-          }
-          totals[date] += account.amount;
-        });
-        setDailyTotals(totals);
-      } catch (error) {
-        console.error('Error loading accounts:', error);
-      }
-    };
-    
-    loadAccounts();
-    
-    // Set up real-time subscription to accounts table
-    const subscription = supabase
-      .channel('accounts-channel')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'accounts' }, 
-        payload => {
-          console.log('Real-time update received:', payload);
-          
-          // Reload all accounts when there's any change
-          loadAccounts();
-        }
-      )
-      .subscribe();
-    
-    // Clean up subscription when component unmounts
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [isLoading, user]);
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push('/auth');
+  };
 
-  // Load depositors from Supabase Auth
-  useEffect(() => {
-    const loadDepositors = async () => {
-      if (isLoading || !user) return;
-      
-      try {
-        // Get the current user's information
-        const { data: currentUser } = await supabase.auth.getUser();
-        console.log('Current user:', currentUser?.user);
-        
-        // Get the user ID and email from the current session
-        const userId = currentUser?.user?.id;
-        const userEmail = currentUser?.user?.email;
-        
-        // Display user info in the UI
-        setUserInfo({
-          id: userId,
-          email: userEmail,
-          role: currentUser?.user?.user_metadata?.role || 'order_giver'
-        });
-        
-        // Create a map to store all depositor users
-        const depositorMap = {};
-        
-        // Try to fetch users with depositor role from Supabase Auth
-        // Note: This requires admin privileges and might not work from client-side
-        // We'll use a different approach to get real users
-        
-        // Fetch all existing accounts to get unique depositor IDs
-        const { data: existingAccounts, error: accountsError } = await supabase
-          .from('accounts')
-          .select('depositor_id, account_name')
-          .order('created_at', { ascending: false });
-          
-        if (accountsError) {
-          console.error('Error fetching existing accounts:', accountsError);
-        } else {
-          console.log('Existing accounts:', existingAccounts);
-          
-          // Add depositor IDs from existing accounts
-          if (existingAccounts && existingAccounts.length > 0) {
-            existingAccounts.forEach(account => {
-              if (account.depositor_id && !depositorMap[account.depositor_id]) {
-                // Check if the depositor_id looks like an email
-                const isEmail = account.depositor_id.includes('@');
-                const displayName = isEmail ? account.depositor_id : `Depositor for ${account.account_name}`;
-                
-                depositorMap[account.depositor_id] = {
-                  id: account.depositor_id,
-                  name: displayName
-                };
-              }
-            });
-          }
-        }
-        
-        // Always include the current user as a depositor option
-        depositorMap[userId] = {
-          id: userId,
-          name: `You (${userEmail})`
-        };
-        
-        // Add the specific email you mentioned
-        if (!depositorMap['mohammedkhurram14.mk@gmail.com']) {
-          depositorMap['mohammedkhurram14.mk@gmail.com'] = {
-            id: 'mohammedkhurram14.mk@gmail.com',
-            name: 'Mohammed Khurram (mohammedkhurram14.mk@gmail.com)'
-          };
-        }
-        
-        // Convert the map to an array of depositor objects
-        const allDepositors = Object.values(depositorMap);
-        
-        setDepositors(allDepositors);
-        console.log('Using depositors:', allDepositors);
-      } catch (error) {
-        console.error('Error loading depositors:', error);
-        // Fall back to minimal data with just the current user and specific email
-        const { data: currentUser } = await supabase.auth.getUser();
-        const userId = currentUser?.user?.id;
-        const userEmail = currentUser?.user?.email;
-        
-        const minimalDepositors = [
-          { id: userId, name: `You (${userEmail})` },
-          { id: 'mohammedkhurram14.mk@gmail.com', name: 'Mohammed Khurram (mohammedkhurram14.mk@gmail.com)' }
-        ];
-        setDepositors(minimalDepositors);
-      }
-    };
-    
-    loadDepositors();
-  }, [isLoading, user]);
-
-  // Show loading state or redirect if not authenticated
   if (isLoading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loadingContainer}>
-          <div className={styles.loadingSpinner}></div>
-          <p>Loading...</p>
-        </div>
+        <p>Loading...</p>
       </div>
     );
   }
@@ -357,13 +298,13 @@ export default function P2PPage() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>P2P Transactions - NovaP2P</title>
-        <meta name="description" content="P2P transaction page for NovaP2P" />
+        <title>P2P Transactions</title>
+        <meta name="description" content="P2P transaction page" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <header className={styles.header}>
-        <div className={styles.logo}>NovaP2P</div>
+        <div className={styles.logo}>P2P Platform</div>
         <nav className={styles.nav}>
           <Link href="/" className={styles.navLink}>Home</Link>
           <Link href="/p2p" className={`${styles.navLink} ${styles.activeLink}`}>P2P</Link>
@@ -378,202 +319,211 @@ export default function P2PPage() {
         </div>
       </header>
 
-      <main className={styles.main}>
-        <h1 className={styles.title} style={{ marginBottom: '0.5rem' }}>P2P Transaction</h1>
+      <main className={styles.main} style={{ width: '100%', padding: '0 20px' }}>
+        <h1 className={styles.title} style={{ marginBottom: '1rem', textAlign: 'center' }}>P2P Transaction</h1>
         
-        {/* User Information Section */}
-        <div className={styles.userInfoSection} style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-          <h3 style={{ marginTop: '0', color: '#333' }}>Current User Information</h3>
-          <p><strong>Email:</strong> {userInfo.email || 'Not available'}</p>
-          <p><strong>User ID:</strong> {userInfo.id || 'Not available'}</p>
-          <p><strong>Role:</strong> {userInfo.role || 'Not available'}</p>
-          <p><strong>Note:</strong> When creating an account, assign it to a depositor to see it in the depositor view.</p>
-        </div>
-        
-        <div className={styles.p2pPageLayout}>
-          <div className={styles.p2pFormContainer}>
-            <h2 className={styles.sectionTitle}>Add New Account</h2>
-            <form onSubmit={handleSubmit} className={styles.p2pForm}>
-              <div className={styles.formGroup}>
-                <label htmlFor="amount">Amount (INR)</label>
-                <input
-                  type="number"
-                  id="amount"
-                  name="amount"
-                  value={formData.amount}
-                  onChange={handleChange}
-                  placeholder="Enter amount"
-                  required
-                  className={styles.formInput}
-                />
-              </div>
-              
-              <div className={styles.formGroup}>
-                <label htmlFor="bank_name">Bank Name</label>
-                <input
-                  type="text"
-                  id="bank_name"
-                  name="bank_name"
-                  value={formData.bank_name}
-                  onChange={handleChange}
-                  placeholder="Enter bank name"
-                  required
-                  className={styles.formInput}
-                />
-              </div>
-              
-              <div className={styles.formGroup}>
-                <label htmlFor="ifsc">IFSC Code</label>
-                <input
-                  type="text"
-                  id="ifsc"
-                  name="ifsc"
-                  value={formData.ifsc}
-                  onChange={handleChange}
-                  placeholder="Enter IFSC code"
-                  required
-                  className={styles.formInput}
-                />
-              </div>
-              
-              <div className={styles.formGroup}>
-                <label htmlFor="account_number">Account Number</label>
-                <input
-                  type="text"
-                  id="account_number"
-                  name="account_number"
-                  value={formData.account_number}
-                  onChange={handleChange}
-                  placeholder="Enter account number"
-                  required
-                  className={styles.formInput}
-                />
-              </div>
-              
-              <div className={styles.formGroup}>
-                <label htmlFor="account_name">Account Holder Name</label>
-                <input
-                  type="text"
-                  id="account_name"
-                  name="account_name"
-                  value={formData.account_name}
-                  onChange={handleChange}
-                  placeholder="Enter account holder name"
-                  required
-                  className={styles.formInput}
-                />
-              </div>
-              
-              <div className={styles.formGroup}>
-                <label htmlFor="upi_id">UPI ID (Optional)</label>
-                <input
-                  type="text"
-                  id="upi_id"
-                  name="upi_id"
-                  value={formData.upi_id}
-                  onChange={handleChange}
-                  placeholder="Enter UPI ID (optional)"
-                  className={styles.formInput}
-                />
-              </div>
-              
-              <div className={styles.formGroup}>
-                <label htmlFor="depositor_id">Assign to Depositor</label>
-                <select
-                  id="depositor_id"
-                  name="depositor_id"
-                  value={formData.depositor_id}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select a depositor</option>
-                  {depositors.map(depositor => (
-                    <option key={depositor.id} value={depositor.id}>
-                      {depositor.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              
-              <button type="submit" className={styles.submitButton}>
-                Add Account
-              </button>
-            </form>
-          </div>
-          
-          <div className={styles.accountsTableContainer}>
-            <h2 className={styles.sectionTitle}>Account Details</h2>
-            
-            {accounts.length > 0 ? (
-              <div className={styles.tableWrapper}>
-                <table className={styles.accountsTable}>
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Account Name</th>
-                      <th>Bank Name</th>
-                      <th>Account Number</th>
-                      <th>IFSC</th>
-                      <th>Amount (INR)</th>
-                      <th>UPI ID</th>
-                      <th>Depositor</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {accounts.map((account) => (
-                      <tr key={account.id} className={account.verified ? styles.verifiedRow : ''}>
-                        <td>{account.date}</td>
-                        <td>{account.account_name}</td>
-                        <td>{account.bank_name}</td>
-                        <td>{account.account_number}</td>
-                        <td>{account.ifsc}</td>
-                        <td className={styles.amountCell}>{parseFloat(account.amount).toLocaleString('en-IN')}</td>
-                        <td>{account.upi_id || '-'}</td>
-                        <td>
-                          {depositors.find(d => d.id === account.depositor_id)?.name || '-'}
-                        </td>
-                        <td>
-                          {account.verified ? 'Verified' : 'Pending'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p className={styles.noDataMessage}>No accounts added yet.</p>
-            )}
-            
-            {Object.keys(dailyTotals).length > 0 && (
-              <div className={styles.dailyTotalsSection}>
-                <h3 className={styles.sectionSubtitle}>Daily Totals</h3>
-                <div className={styles.tableWrapper}>
-                  <table className={styles.totalsTable}>
-                    <thead>
-                      <tr>
-                        <th>Date</th>
-                        <th>Total Amount (INR)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Object.entries(dailyTotals).map(([date, total]) => (
-                        <tr key={date}>
-                          <td>{date}</td>
-                          <td className={styles.amountCell}>{total.toLocaleString('en-IN')}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+        {/* Form and Account Details Container */}
+        <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+          {/* Add New Account Form */}
+          <h2 className={styles.sectionTitle} style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Add New Account</h2>
+          <form onSubmit={handleSubmit} className={styles.p2pForm} style={{ width: '100%' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', width: '100%' }}>
+              {/* First row - Amount and Bank Name */}
+              <div style={{ display: 'flex', gap: '15px', width: '100%' }}>
+                <div className={styles.formGroup} style={{ flex: '1', backgroundColor: 'rgba(38, 193, 126, 0.05)', padding: '10px', borderRadius: '8px' }}>
+                  <label htmlFor="amount" style={{ fontWeight: 'bold', color: '#26C17E', marginBottom: '5px', display: 'block' }}>Amount (INR)</label>
+                  <input
+                    type="number"
+                    id="amount"
+                    name="amount"
+                    value={formData.amount}
+                    onChange={handleChange}
+                    placeholder="Enter amount"
+                    required
+                    className={styles.formInput}
+                    style={{ borderColor: '#26C17E', width: '100%', padding: '8px' }}
+                  />
+                </div>
+                
+                <div className={styles.formGroup} style={{ flex: '1' }}>
+                  <label htmlFor="bank_name" style={{ marginBottom: '5px', display: 'block' }}>Bank Name</label>
+                  <input
+                    type="text"
+                    id="bank_name"
+                    name="bank_name"
+                    value={formData.bank_name}
+                    onChange={handleChange}
+                    placeholder="Enter bank name"
+                    required
+                    className={styles.formInput}
+                    style={{ width: '100%', padding: '8px' }}
+                  />
                 </div>
               </div>
-            )}
+              
+              {/* Second row - IFSC and Account Number */}
+              <div style={{ display: 'flex', gap: '15px', width: '100%' }}>
+                <div className={styles.formGroup} style={{ flex: '1' }}>
+                  <label htmlFor="ifsc" style={{ marginBottom: '5px', display: 'block' }}>IFSC Code</label>
+                  <input
+                    type="text"
+                    id="ifsc"
+                    name="ifsc"
+                    value={formData.ifsc}
+                    onChange={handleChange}
+                    placeholder="Enter IFSC code"
+                    required
+                    className={styles.formInput}
+                    style={{ width: '100%', padding: '8px' }}
+                  />
+                </div>
+                
+                <div className={styles.formGroup} style={{ flex: '1' }}>
+                  <label htmlFor="account_number" style={{ marginBottom: '5px', display: 'block' }}>Account Number</label>
+                  <input
+                    type="text"
+                    id="account_number"
+                    name="account_number"
+                    value={formData.account_number}
+                    onChange={handleChange}
+                    placeholder="Enter account number"
+                    required
+                    className={styles.formInput}
+                    style={{ width: '100%', padding: '8px' }}
+                  />
+                </div>
+              </div>
+              
+              {/* Third row - Account Holder Name and UPI ID */}
+              <div style={{ display: 'flex', gap: '15px', width: '100%' }}>
+                <div className={styles.formGroup} style={{ flex: '1' }}>
+                  <label htmlFor="account_name" style={{ marginBottom: '5px', display: 'block' }}>Account Holder Name</label>
+                  <input
+                    type="text"
+                    id="account_name"
+                    name="account_name"
+                    value={formData.account_name}
+                    onChange={handleChange}
+                    placeholder="Enter account holder name"
+                    required
+                    className={styles.formInput}
+                    style={{ width: '100%', padding: '8px' }}
+                  />
+                </div>
+                
+                <div className={styles.formGroup} style={{ flex: '1' }}>
+                  <label htmlFor="upi_id" style={{ marginBottom: '5px', display: 'block' }}>UPI ID (Optional)</label>
+                  <input
+                    type="text"
+                    id="upi_id"
+                    name="upi_id"
+                    value={formData.upi_id}
+                    onChange={handleChange}
+                    placeholder="Enter UPI ID (optional)"
+                    className={styles.formInput}
+                    style={{ width: '100%', padding: '8px' }}
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div style={{ marginTop: '15px' }}>
+              <button type="submit" className={styles.submitButton} style={{ width: '100%', padding: '10px', fontSize: '1rem', fontWeight: 'bold', backgroundColor: '#26C17E', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                Add Account
+              </button>
+            </div>
+          </form>
+
+          {/* Account Details Section */}
+          <div style={{ marginTop: '2rem' }}>
+            <h2 className={styles.sectionTitle} style={{ textAlign: 'center', marginBottom: '1.5rem', backgroundColor: '#26C17E', color: 'white', padding: '10px', borderRadius: '8px' }}>Account Details</h2>
+            
+            {/* Daily Totals section removed */}
+            
+            {/* Accounts Table */}
+            <div style={{ width: '100%' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+                <thead>
+                  <tr>
+                    <th style={{ padding: '12px 8px', textAlign: 'left', backgroundColor: '#26C17E', color: 'white', borderRadius: '4px 0 0 0', width: '12%' }}>Amount</th>
+                    <th style={{ padding: '12px 8px', textAlign: 'left', backgroundColor: '#26C17E', color: 'white', width: '12%' }}>Bank</th>
+                    <th style={{ padding: '12px 8px', textAlign: 'left', backgroundColor: '#26C17E', color: 'white', width: '15%' }}>Account Number</th>
+                    <th style={{ padding: '12px 8px', textAlign: 'left', backgroundColor: '#26C17E', color: 'white', width: '15%' }}>Account Holder</th>
+                    <th style={{ padding: '12px 8px', textAlign: 'left', backgroundColor: '#26C17E', color: 'white', width: '15%' }}>Date</th>
+                    <th style={{ padding: '12px 8px', textAlign: 'center', backgroundColor: '#26C17E', color: 'white', width: '15%' }}>Status</th>
+                    <th style={{ padding: '12px 8px', textAlign: 'center', backgroundColor: '#26C17E', color: 'white', borderRadius: '0 4px 0 0', width: '11%' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {accounts.length > 0 ? (
+                    accounts.map(account => (
+                      <tr key={account.id} style={{ borderBottom: '1px solid #ddd' }}>
+                        <td style={{ padding: '15px 10px', color: '#26C17E', fontWeight: 'bold' }}>₹{parseFloat(account.amount).toFixed(2)}</td>
+                        <td style={{ padding: '15px 10px' }}>{account.bank_name}</td>
+                        <td style={{ padding: '15px 10px' }}>{account.account_number}</td>
+                        <td style={{ padding: '15px 10px' }}>{account.account_name}</td>
+                        <td style={{ padding: '15px 10px' }}>{new Date(account.date).toLocaleDateString()}</td>
+                        <td style={{ padding: '15px 10px', textAlign: 'center' }}>
+                          <select 
+                            value={account.verified === 1 ? 'completed' : 'pending'}
+                            onChange={(e) => handleUpdateStatus(account.id, e.target.value)}
+                            style={{
+                              padding: '10px',
+                              borderRadius: '4px',
+                              border: 'none',
+                              width: '100%',
+                              backgroundColor: account.verified === 1 ? '#1890ff' : '#fa8c16',
+                              color: 'white',
+                              fontWeight: 'bold',
+                              cursor: 'pointer',
+                              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                              WebkitAppearance: 'none',
+                              MozAppearance: 'none',
+                              appearance: 'none',
+                              backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")',
+                              backgroundRepeat: 'no-repeat',
+                              backgroundPosition: 'right 10px center',
+                              backgroundSize: '12px'
+                            }}
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                          </select>
+                        </td>
+                        <td style={{ padding: '15px 10px', textAlign: 'center' }}>
+                          <button 
+                            onClick={() => handleDeleteAccount(account.id)} 
+                            style={{ 
+                              backgroundColor: '#ff4d4f', 
+                              color: 'white', 
+                              border: 'none', 
+                              padding: '8px 12px', 
+                              borderRadius: '4px', 
+                              cursor: 'pointer',
+                              width: '100%',
+                              fontWeight: 'bold',
+                              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="7" style={{ padding: '20px', textAlign: 'center', fontSize: '1.1rem', color: '#666' }}>No accounts found. Add your first account above.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </main>
 
       <footer className={styles.footer}>
-        <p>© 2025 NovaP2P. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} P2P Platform. All rights reserved.</p>
       </footer>
     </div>
   );
