@@ -119,13 +119,11 @@ export default function P2PPage() {
       const { data: { user }, error } = await supabase.auth.getUser();
 
       if (error) throw error;
-      if (user) {
-        setUserInfo({
-          id: user.id,
-          email: user.email,
-          role: user.app_metadata?.role || 'user' // Default to 'user' if role is not defined
-        });
-      }
+      // User info is already stored in the user state, so we don't need to set it again
+      // Just log for debugging purposes
+      console.log('User info fetched:', user);
+      
+      // No need to call setUserInfo as we're using the user state directly
     } catch (error) {
       console.error('Error fetching user info:', error);
     }
